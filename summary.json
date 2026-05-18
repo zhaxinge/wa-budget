@@ -1,0 +1,2030 @@
+{
+  "AI_CONTEXT": {
+    "instruction": "Use VERIFIED_FACTS as authoritative ground truth. Use summarized_context and sample_rows only as secondary context. Never recompute full-dataset totals from sample_rows.",
+    "VERIFIED_FACTS": {
+      "computed_at_source_file": "Vendor-Payments_2021-23.xlsx",
+      "rule": "AUTHORITATIVE_GROUND_TRUTH. These computed facts are based on the full input dataset and override sample rows.",
+      "row_count": 450458,
+      "total_payments": 29543973902.440002,
+      "total_payments_formatted": "$29.5B",
+      "years": [
+        2022
+      ],
+      "year_range": "2022-2022",
+      "vendor_count": 65494,
+      "agency_count": 99,
+      "top_vendor": {
+        "name": "MOLINA HEALTHCARE OF WASHINGTON",
+        "amount": 4553221152.26,
+        "amount_formatted": "$4.6B",
+        "share_percent": 15
+      },
+      "top_agency": {
+        "name": "Health Care Authority",
+        "amount": 13131696692.69,
+        "amount_formatted": "$13.1B",
+        "share_percent": 44
+      },
+      "top_fund": {
+        "name": "Grants, Benefits & Client Services",
+        "amount": 23316516132.47,
+        "amount_formatted": "$23.3B",
+        "share_percent": 79
+      },
+      "totals_by_year": [
+        {
+          "year": 2022,
+          "amount": 29543973902.440002,
+          "amount_formatted": "$29.5B",
+          "share_percent": 100
+        }
+      ],
+      "top_vendors": [
+        {
+          "name": "MOLINA HEALTHCARE OF WASHINGTON",
+          "amount": 4553221152.26,
+          "amount_formatted": "$4.6B",
+          "share_percent": 15
+        },
+        {
+          "name": "PUBLIC PARTNERSHIPS LLC",
+          "amount": 1426492739.79,
+          "amount_formatted": "$1.4B",
+          "share_percent": 5
+        },
+        {
+          "name": "UNITED HEALTH CARE OF WASHINGTON",
+          "amount": 1321815571.3899999,
+          "amount_formatted": "$1.3B",
+          "share_percent": 4
+        },
+        {
+          "name": "AMERIGROUP WASHINGTON INC",
+          "amount": 1307119318.39,
+          "amount_formatted": "$1.3B",
+          "share_percent": 4
+        },
+        {
+          "name": "COMMUNITY HEALTH PLAN OF WASHING",
+          "amount": 1158754005.43,
+          "amount_formatted": "$1.2B",
+          "share_percent": 4
+        },
+        {
+          "name": "COORDINATED CARE OF WASHINGTON I",
+          "amount": 1041809891.8,
+          "amount_formatted": "$1.0B",
+          "share_percent": 4
+        },
+        {
+          "name": "CONSUMER DIRECT CARE NETWORK WAS",
+          "amount": 477590639.58,
+          "amount_formatted": "$478M",
+          "share_percent": 2
+        },
+        {
+          "name": "KING CO HOUSING & COMM DEV",
+          "amount": 265021879.31,
+          "amount_formatted": "$265M",
+          "share_percent": 1
+        },
+        {
+          "name": "DOH GRANTS",
+          "amount": 230107654.96,
+          "amount_formatted": "$230M",
+          "share_percent": 1
+        },
+        {
+          "name": "US BANK PURCHASING CARD PROGRAM",
+          "amount": 211409538.37,
+          "amount_formatted": "$211M",
+          "share_percent": 1
+        },
+        {
+          "name": "PUBLIC CONSULTING GROUP INC",
+          "amount": 202574455.51999998,
+          "amount_formatted": "$203M",
+          "share_percent": 1
+        },
+        {
+          "name": "CLARK CONSTRUCTION LLC",
+          "amount": 200423886.42,
+          "amount_formatted": "$200M",
+          "share_percent": 1
+        },
+        {
+          "name": "MOLINA HEALTHCARE OF WA INC",
+          "amount": 176409304.85,
+          "amount_formatted": "$176M",
+          "share_percent": 1
+        },
+        {
+          "name": "KING CO PUBLIC HEALTH",
+          "amount": 170757256.33,
+          "amount_formatted": "$171M",
+          "share_percent": 1
+        },
+        {
+          "name": "RES-CARE OF WASHINGTON INC.",
+          "amount": 156602420.07,
+          "amount_formatted": "$157M",
+          "share_percent": 1
+        },
+        {
+          "name": "HARBORVIEW MEDICAL CENTER",
+          "amount": 154149382.0,
+          "amount_formatted": "$154M",
+          "share_percent": 1
+        },
+        {
+          "name": "DES RISK MGMT SELF INSUR CLAIM",
+          "amount": 152597500.13,
+          "amount_formatted": "$153M",
+          "share_percent": 1
+        },
+        {
+          "name": "UNIVERSITY OF WASHINGTON",
+          "amount": 133466834.77,
+          "amount_formatted": "$133M",
+          "share_percent": 0
+        },
+        {
+          "name": "IHEALTH LABS INC",
+          "amount": 131572500.0,
+          "amount_formatted": "$132M",
+          "share_percent": 0
+        },
+        {
+          "name": "GRAHAM CONTRACTING LTD",
+          "amount": 131572413.51,
+          "amount_formatted": "$132M",
+          "share_percent": 0
+        },
+        {
+          "name": "ATG LEGAL SVCS",
+          "amount": 130240488.85,
+          "amount_formatted": "$130M",
+          "share_percent": 0
+        },
+        {
+          "name": "COMMUNITY HEALTH PLAN OF WASH",
+          "amount": 113014765.35,
+          "amount_formatted": "$113M",
+          "share_percent": 0
+        },
+        {
+          "name": "DCYF",
+          "amount": 105894482.10000001,
+          "amount_formatted": "$106M",
+          "share_percent": 0
+        },
+        {
+          "name": "SNOHOMISH COUNTY HUMAN SERVICES",
+          "amount": 100465074.79,
+          "amount_formatted": "$100M",
+          "share_percent": 0
+        },
+        {
+          "name": "KING CO FINANCE",
+          "amount": 96289490.05,
+          "amount_formatted": "$96M",
+          "share_percent": 0
+        },
+        {
+          "name": "ACI FEDERAL",
+          "amount": 91257413.11,
+          "amount_formatted": "$91M",
+          "share_percent": 0
+        },
+        {
+          "name": "WASHINGTON HEALTH BENEFIT EXCHNG",
+          "amount": 86497241.0,
+          "amount_formatted": "$86M",
+          "share_percent": 0
+        },
+        {
+          "name": "PIERCE COUNTY HOUSING PROGRAMS",
+          "amount": 78269302.46,
+          "amount_formatted": "$78M",
+          "share_percent": 0
+        },
+        {
+          "name": "REGENCE BLUESHIELD",
+          "amount": 77575160.43,
+          "amount_formatted": "$78M",
+          "share_percent": 0
+        },
+        {
+          "name": "SEATTLE  CITY OF UTIL SOLID WST",
+          "amount": 77206407.96,
+          "amount_formatted": "$77M",
+          "share_percent": 0
+        }
+      ],
+      "top_agencies": [
+        {
+          "name": "Health Care Authority",
+          "amount": 13131696692.69,
+          "amount_formatted": "$13.1B",
+          "share_percent": 44
+        },
+        {
+          "name": "Social and Health Services",
+          "amount": 6023741435.54,
+          "amount_formatted": "$6.0B",
+          "share_percent": 20
+        },
+        {
+          "name": "Transportation",
+          "amount": 1753989898.3,
+          "amount_formatted": "$1.8B",
+          "share_percent": 6
+        },
+        {
+          "name": "Health",
+          "amount": 1447472829.9,
+          "amount_formatted": "$1.4B",
+          "share_percent": 5
+        },
+        {
+          "name": "Commerce",
+          "amount": 1415870737.19,
+          "amount_formatted": "$1.4B",
+          "share_percent": 5
+        },
+        {
+          "name": "Children, Youth, and Families",
+          "amount": 1342742206.9,
+          "amount_formatted": "$1.3B",
+          "share_percent": 5
+        },
+        {
+          "name": "Public Schools",
+          "amount": 912194977.15,
+          "amount_formatted": "$912M",
+          "share_percent": 3
+        },
+        {
+          "name": "Ecology",
+          "amount": 434599484.3,
+          "amount_formatted": "$435M",
+          "share_percent": 1
+        },
+        {
+          "name": "Military Department",
+          "amount": 403235855.63,
+          "amount_formatted": "$403M",
+          "share_percent": 1
+        },
+        {
+          "name": "Corrections",
+          "amount": 400328477.81,
+          "amount_formatted": "$400M",
+          "share_percent": 1
+        },
+        {
+          "name": "Natural Resources",
+          "amount": 208866242.9,
+          "amount_formatted": "$209M",
+          "share_percent": 1
+        },
+        {
+          "name": "Recreation and Conservation Office",
+          "amount": 166325316.45,
+          "amount_formatted": "$166M",
+          "share_percent": 1
+        },
+        {
+          "name": "Enterprise Services",
+          "amount": 164173602.02,
+          "amount_formatted": "$164M",
+          "share_percent": 1
+        },
+        {
+          "name": "Labor and Industries",
+          "amount": 164062280.47,
+          "amount_formatted": "$164M",
+          "share_percent": 1
+        },
+        {
+          "name": "Fish and Wildlife",
+          "amount": 143516458.14,
+          "amount_formatted": "$144M",
+          "share_percent": 0
+        },
+        {
+          "name": "Employment Security Department",
+          "amount": 135172868.27,
+          "amount_formatted": "$135M",
+          "share_percent": 0
+        },
+        {
+          "name": "Consolidated Technology Services",
+          "amount": 124543839.99,
+          "amount_formatted": "$125M",
+          "share_percent": 0
+        },
+        {
+          "name": "State Patrol",
+          "amount": 112504548.75,
+          "amount_formatted": "$113M",
+          "share_percent": 0
+        },
+        {
+          "name": "Agriculture",
+          "amount": 105473912.38,
+          "amount_formatted": "$105M",
+          "share_percent": 0
+        },
+        {
+          "name": "Licensing",
+          "amount": 72089328.97,
+          "amount_formatted": "$72M",
+          "share_percent": 0
+        }
+      ],
+      "fund_breakdown": [
+        {
+          "name": "Grants, Benefits & Client Services",
+          "amount": 23316516132.47,
+          "amount_formatted": "$23.3B",
+          "share_percent": 79
+        },
+        {
+          "name": "Goods and Services",
+          "amount": 3700369226.21,
+          "amount_formatted": "$3.7B",
+          "share_percent": 13
+        },
+        {
+          "name": "Capital Outlays",
+          "amount": 1570449457.37,
+          "amount_formatted": "$1.6B",
+          "share_percent": 5
+        },
+        {
+          "name": "Personal Service Contracts",
+          "amount": 836515788.45,
+          "amount_formatted": "$837M",
+          "share_percent": 3
+        },
+        {
+          "name": "Travel",
+          "amount": 59851086.85,
+          "amount_formatted": "$60M",
+          "share_percent": 0
+        },
+        {
+          "name": "Debt Service",
+          "amount": 23124271.03,
+          "amount_formatted": "$23M",
+          "share_percent": 0
+        },
+        {
+          "name": "Interagency Reimbursements",
+          "amount": 14001400.08,
+          "amount_formatted": "$14M",
+          "share_percent": 0
+        },
+        {
+          "name": "Cost Of Goods Sold",
+          "amount": 12142232.03,
+          "amount_formatted": "$12M",
+          "share_percent": 0
+        },
+        {
+          "name": "Intra-Agency Reimbursements",
+          "amount": 11004307.95,
+          "amount_formatted": "$11M",
+          "share_percent": 0
+        }
+      ],
+      "fastest_vendor_growth": [],
+      "largest_vendor_decreases": []
+    },
+    "summarized_context": {
+      "top_vendors": [
+        {
+          "name": "MOLINA HEALTHCARE OF WASHINGTON",
+          "amount": 4553221152.26,
+          "amount_formatted": "$4.6B",
+          "share_percent": 15
+        },
+        {
+          "name": "PUBLIC PARTNERSHIPS LLC",
+          "amount": 1426492739.79,
+          "amount_formatted": "$1.4B",
+          "share_percent": 5
+        },
+        {
+          "name": "UNITED HEALTH CARE OF WASHINGTON",
+          "amount": 1321815571.3899999,
+          "amount_formatted": "$1.3B",
+          "share_percent": 4
+        },
+        {
+          "name": "AMERIGROUP WASHINGTON INC",
+          "amount": 1307119318.39,
+          "amount_formatted": "$1.3B",
+          "share_percent": 4
+        },
+        {
+          "name": "COMMUNITY HEALTH PLAN OF WASHING",
+          "amount": 1158754005.43,
+          "amount_formatted": "$1.2B",
+          "share_percent": 4
+        },
+        {
+          "name": "COORDINATED CARE OF WASHINGTON I",
+          "amount": 1041809891.8,
+          "amount_formatted": "$1.0B",
+          "share_percent": 4
+        },
+        {
+          "name": "CONSUMER DIRECT CARE NETWORK WAS",
+          "amount": 477590639.58,
+          "amount_formatted": "$478M",
+          "share_percent": 2
+        },
+        {
+          "name": "KING CO HOUSING & COMM DEV",
+          "amount": 265021879.31,
+          "amount_formatted": "$265M",
+          "share_percent": 1
+        },
+        {
+          "name": "DOH GRANTS",
+          "amount": 230107654.96,
+          "amount_formatted": "$230M",
+          "share_percent": 1
+        },
+        {
+          "name": "US BANK PURCHASING CARD PROGRAM",
+          "amount": 211409538.37,
+          "amount_formatted": "$211M",
+          "share_percent": 1
+        },
+        {
+          "name": "PUBLIC CONSULTING GROUP INC",
+          "amount": 202574455.51999998,
+          "amount_formatted": "$203M",
+          "share_percent": 1
+        },
+        {
+          "name": "CLARK CONSTRUCTION LLC",
+          "amount": 200423886.42,
+          "amount_formatted": "$200M",
+          "share_percent": 1
+        },
+        {
+          "name": "MOLINA HEALTHCARE OF WA INC",
+          "amount": 176409304.85,
+          "amount_formatted": "$176M",
+          "share_percent": 1
+        },
+        {
+          "name": "KING CO PUBLIC HEALTH",
+          "amount": 170757256.33,
+          "amount_formatted": "$171M",
+          "share_percent": 1
+        },
+        {
+          "name": "RES-CARE OF WASHINGTON INC.",
+          "amount": 156602420.07,
+          "amount_formatted": "$157M",
+          "share_percent": 1
+        }
+      ],
+      "top_agencies": [
+        {
+          "name": "Health Care Authority",
+          "amount": 13131696692.69,
+          "amount_formatted": "$13.1B",
+          "share_percent": 44
+        },
+        {
+          "name": "Social and Health Services",
+          "amount": 6023741435.54,
+          "amount_formatted": "$6.0B",
+          "share_percent": 20
+        },
+        {
+          "name": "Transportation",
+          "amount": 1753989898.3,
+          "amount_formatted": "$1.8B",
+          "share_percent": 6
+        },
+        {
+          "name": "Health",
+          "amount": 1447472829.9,
+          "amount_formatted": "$1.4B",
+          "share_percent": 5
+        },
+        {
+          "name": "Commerce",
+          "amount": 1415870737.19,
+          "amount_formatted": "$1.4B",
+          "share_percent": 5
+        },
+        {
+          "name": "Children, Youth, and Families",
+          "amount": 1342742206.9,
+          "amount_formatted": "$1.3B",
+          "share_percent": 5
+        },
+        {
+          "name": "Public Schools",
+          "amount": 912194977.15,
+          "amount_formatted": "$912M",
+          "share_percent": 3
+        },
+        {
+          "name": "Ecology",
+          "amount": 434599484.3,
+          "amount_formatted": "$435M",
+          "share_percent": 1
+        },
+        {
+          "name": "Military Department",
+          "amount": 403235855.63,
+          "amount_formatted": "$403M",
+          "share_percent": 1
+        },
+        {
+          "name": "Corrections",
+          "amount": 400328477.81,
+          "amount_formatted": "$400M",
+          "share_percent": 1
+        }
+      ],
+      "fund_breakdown": [
+        {
+          "name": "Grants, Benefits & Client Services",
+          "amount": 23316516132.47,
+          "amount_formatted": "$23.3B",
+          "share_percent": 79
+        },
+        {
+          "name": "Goods and Services",
+          "amount": 3700369226.21,
+          "amount_formatted": "$3.7B",
+          "share_percent": 13
+        },
+        {
+          "name": "Capital Outlays",
+          "amount": 1570449457.37,
+          "amount_formatted": "$1.6B",
+          "share_percent": 5
+        },
+        {
+          "name": "Personal Service Contracts",
+          "amount": 836515788.45,
+          "amount_formatted": "$837M",
+          "share_percent": 3
+        },
+        {
+          "name": "Travel",
+          "amount": 59851086.85,
+          "amount_formatted": "$60M",
+          "share_percent": 0
+        },
+        {
+          "name": "Debt Service",
+          "amount": 23124271.03,
+          "amount_formatted": "$23M",
+          "share_percent": 0
+        },
+        {
+          "name": "Interagency Reimbursements",
+          "amount": 14001400.08,
+          "amount_formatted": "$14M",
+          "share_percent": 0
+        },
+        {
+          "name": "Cost Of Goods Sold",
+          "amount": 12142232.03,
+          "amount_formatted": "$12M",
+          "share_percent": 0
+        },
+        {
+          "name": "Intra-Agency Reimbursements",
+          "amount": 11004307.95,
+          "amount_formatted": "$11M",
+          "share_percent": 0
+        }
+      ],
+      "totals_by_year": [
+        {
+          "year": 2022,
+          "amount": 29543973902.440002,
+          "amount_formatted": "$29.5B",
+          "share_percent": 100
+        }
+      ],
+      "fastest_vendor_growth": []
+    },
+    "sample_rows_limit": 200,
+    "sample_rows": [
+      {
+        "vendor": "KORNMESSER OPTOMETRY CLINIC",
+        "agency": "Health Care Authority",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 1698.61,
+        "fy": 2022
+      },
+      {
+        "vendor": "KRISTIN LIFFICK JACOB OD",
+        "agency": "Health Care Authority",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 89.45,
+        "fy": 2022
+      },
+      {
+        "vendor": "KRISTYN HUFFMAN",
+        "agency": "Health Care Authority",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 23.08,
+        "fy": 2022
+      },
+      {
+        "vendor": "KURT TRUONG, DDS, MSD, PLLC",
+        "agency": "Health Care Authority",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 53803.03,
+        "fy": 2022
+      },
+      {
+        "vendor": "L G STECK MEDICAL GROUP CLINIC P",
+        "agency": "Health Care Authority",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 1606.09,
+        "fy": 2022
+      },
+      {
+        "vendor": "LA GROTTA, DALIS",
+        "agency": "Health Care Authority",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 79.6,
+        "fy": 2022
+      },
+      {
+        "vendor": "LABORATORY SERVICES COOPERATIVE",
+        "agency": "Health Care Authority",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 14774.41,
+        "fy": 2022
+      },
+      {
+        "vendor": "LACEY MEDICAL CLINIC",
+        "agency": "Health Care Authority",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 222.82,
+        "fy": 2022
+      },
+      {
+        "vendor": "LAKE CITY PHYSICAL THERAPY PA",
+        "agency": "Health Care Authority",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 142.31,
+        "fy": 2022
+      },
+      {
+        "vendor": "LAKE WASHINGTON ANESTHESIA PLLC",
+        "agency": "Health Care Authority",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 1231.79,
+        "fy": 2022
+      },
+      {
+        "vendor": "LAKE WASHINGTON VASCULAR PLLC",
+        "agency": "Health Care Authority",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 164.2,
+        "fy": 2022
+      },
+      {
+        "vendor": "LAM, DORIS",
+        "agency": "Health Care Authority",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 842.23,
+        "fy": 2022
+      },
+      {
+        "vendor": "LAMA INVESTMENTS LLC",
+        "agency": "Health Care Authority",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 3422.81,
+        "fy": 2022
+      },
+      {
+        "vendor": "LAN TRAN, O.D.",
+        "agency": "Health Care Authority",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 217.78,
+        "fy": 2022
+      },
+      {
+        "vendor": "LARRY HEGGERNESS SOCIAL PURPOSE",
+        "agency": "Health Care Authority",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 69103.27,
+        "fy": 2022
+      },
+      {
+        "vendor": "LARSON RICHARD J",
+        "agency": "Health Care Authority",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 264.76,
+        "fy": 2022
+      },
+      {
+        "vendor": "LAWRENCE F CACCHIOTTI DDS MS",
+        "agency": "Health Care Authority",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 40262.91,
+        "fy": 2022
+      },
+      {
+        "vendor": "LAWRENCE M. GARGES, MD, PLLC",
+        "agency": "Health Care Authority",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 61.38,
+        "fy": 2022
+      },
+      {
+        "vendor": "HAROLD LEMAY ENTERPRISES",
+        "agency": "Agriculture",
+        "fund": "Goods and Services",
+        "amount": 1018.09,
+        "fy": 2022
+      },
+      {
+        "vendor": "BRAKER BUILDING LLC",
+        "agency": "Agriculture",
+        "fund": "Goods and Services",
+        "amount": 922.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "CONTESLIN LLC",
+        "agency": "Agriculture",
+        "fund": "Goods and Services",
+        "amount": 928.29,
+        "fy": 2022
+      },
+      {
+        "vendor": "ELMAN YAKIMA ASSOCIATES LLC",
+        "agency": "Agriculture",
+        "fund": "Goods and Services",
+        "amount": 61352.42,
+        "fy": 2022
+      },
+      {
+        "vendor": "US BANK PURCHASING CARD PROGRAM",
+        "agency": "Agriculture",
+        "fund": "Goods and Services",
+        "amount": 77.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "VOLUNTEERS OF AMERICA-WESTERN WA",
+        "agency": "Agriculture",
+        "fund": "Goods and Services",
+        "amount": 47950.46,
+        "fy": 2022
+      },
+      {
+        "vendor": "WA STATE UNIV PROSSER",
+        "agency": "Agriculture",
+        "fund": "Goods and Services",
+        "amount": 1980.5,
+        "fy": 2022
+      },
+      {
+        "vendor": "COPIERS NORTHWEST INC",
+        "agency": "Agriculture",
+        "fund": "Goods and Services",
+        "amount": 1795.32,
+        "fy": 2022
+      },
+      {
+        "vendor": "PEARSON  SCOTT F",
+        "agency": "Fish and Wildlife",
+        "fund": "Travel",
+        "amount": 14.99,
+        "fy": 2022
+      },
+      {
+        "vendor": "SMITH  LORNA D",
+        "agency": "Fish and Wildlife",
+        "fund": "Travel",
+        "amount": 53.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "CLAIBORNE  ANDREW MARTIN",
+        "agency": "Fish and Wildlife",
+        "fund": "Travel",
+        "amount": 133.96,
+        "fy": 2022
+      },
+      {
+        "vendor": "FOX  KEVIN T",
+        "agency": "Fish and Wildlife",
+        "fund": "Travel",
+        "amount": 151.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "HAHN  LEONARD JEREMY",
+        "agency": "Fish and Wildlife",
+        "fund": "Travel",
+        "amount": 599.88,
+        "fy": 2022
+      },
+      {
+        "vendor": "HIX THE DALLES",
+        "agency": "Fish and Wildlife",
+        "fund": "Travel",
+        "amount": 525.6,
+        "fy": 2022
+      },
+      {
+        "vendor": "WEEKES  CASSANDRA LYNNE",
+        "agency": "Fish and Wildlife",
+        "fund": "Travel",
+        "amount": 437.72,
+        "fy": 2022
+      },
+      {
+        "vendor": "ALLENS AUTO PARTS INC",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 238.15,
+        "fy": 2022
+      },
+      {
+        "vendor": "ANACORTES DIVING & SUPPLY",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 3634.94,
+        "fy": 2022
+      },
+      {
+        "vendor": "ARNOLDS RANCH & HOME INC",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 506.12,
+        "fy": 2022
+      },
+      {
+        "vendor": "AXON ENTERPRISE INC",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 14156.59,
+        "fy": 2022
+      },
+      {
+        "vendor": "CSWW INC",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 5727.47,
+        "fy": 2022
+      },
+      {
+        "vendor": "CXT INCORPORATED",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 75172.14,
+        "fy": 2022
+      },
+      {
+        "vendor": "DOC CORRECTIONAL INDUSTRIES",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 174180.98,
+        "fy": 2022
+      },
+      {
+        "vendor": "EDGEONE LLC",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 47273.55,
+        "fy": 2022
+      },
+      {
+        "vendor": "GALLS LLC",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 1026.16,
+        "fy": 2022
+      },
+      {
+        "vendor": "HIGHWAY SPECIALTIES LLC",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 876.44,
+        "fy": 2022
+      },
+      {
+        "vendor": "L G ISAACSON CO INC",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 5569.57,
+        "fy": 2022
+      },
+      {
+        "vendor": "NORTHWEST MARINE TECHNOLOGY INC",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 696174.32,
+        "fy": 2022
+      },
+      {
+        "vendor": "OXARC INC",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 2326.99,
+        "fy": 2022
+      },
+      {
+        "vendor": "PEARSON  SCOTT F",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 463.31,
+        "fy": 2022
+      },
+      {
+        "vendor": "PMI TRUCK BODIES INC",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 1706.75,
+        "fy": 2022
+      },
+      {
+        "vendor": "PRESTIGE TRUCK ACCESSORIES INC",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 2839.19,
+        "fy": 2022
+      },
+      {
+        "vendor": "SRM MANUFACTURING",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 191627.46,
+        "fy": 2022
+      },
+      {
+        "vendor": "TIRHI  MICHELLE J",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 527.66,
+        "fy": 2022
+      },
+      {
+        "vendor": "TONASKET FEED & SUPPLY",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 2157.31,
+        "fy": 2022
+      },
+      {
+        "vendor": "ULINE INC",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 320.66,
+        "fy": 2022
+      },
+      {
+        "vendor": "UNDERWATER SPORTS INC",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 12638.59,
+        "fy": 2022
+      },
+      {
+        "vendor": "GORDON PRODUCTS INC",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 46695.46,
+        "fy": 2022
+      },
+      {
+        "vendor": "JETCO MACHINE & FABRICATION LLC",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 103680.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "JTI SUPPLY INC",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 4700.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "LIFE TECHNOLOGIES CORP",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 55536.31,
+        "fy": 2022
+      },
+      {
+        "vendor": "NC MACHINERY CO",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 266823.28,
+        "fy": 2022
+      },
+      {
+        "vendor": "PAPE GROUP  THE",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 200787.59,
+        "fy": 2022
+      },
+      {
+        "vendor": "REX MOTORS INC",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 212535.35,
+        "fy": 2022
+      },
+      {
+        "vendor": "SOLE  ROB L",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 8811.65,
+        "fy": 2022
+      },
+      {
+        "vendor": "THORNBURG COMPUTER SERVICES LLC",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 12038.26,
+        "fy": 2022
+      },
+      {
+        "vendor": "TOYOTA TSUSHO MATERIAL HANDLING",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 29046.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "COMMERCIAL APPRAISAL & CONSULTIN",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 6400.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "DOHERTY FENCE LLC",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 26366.62,
+        "fy": 2022
+      },
+      {
+        "vendor": "EDMONDS  CITY OF",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 43787.69,
+        "fy": 2022
+      },
+      {
+        "vendor": "MCMILLEN LLC",
+        "agency": "Fish and Wildlife",
+        "fund": "Capital Outlays",
+        "amount": 81817.3,
+        "fy": 2022
+      },
+      {
+        "vendor": "SOUND CARE 6935 LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 1997.12,
+        "fy": 2022
+      },
+      {
+        "vendor": "SOUND COUNSELING, LTD",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 1970.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "SOUND FAMILY MED & URGENT CARE",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 92.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "SOUND LEARNING",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 25.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "SOUND MIND SOUND BODY NURSE DELE",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 47243.55,
+        "fy": 2022
+      },
+      {
+        "vendor": "SOUND PSYCHOTHERAPY & ASSESSMENT",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 457.1,
+        "fy": 2022
+      },
+      {
+        "vendor": "SOUND RETINA PS",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 22.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "SOURCE NORTHWEST INTEGRATIVE",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 50.5,
+        "fy": 2022
+      },
+      {
+        "vendor": "SOUTH CORRECTIONAL ENTITY",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 106.5,
+        "fy": 2022
+      },
+      {
+        "vendor": "SOUTHEAST WA AGING & LONG TERM",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 639242.66,
+        "fy": 2022
+      },
+      {
+        "vendor": "SPAH, RAE",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 13549.54,
+        "fy": 2022
+      },
+      {
+        "vendor": "SPINDLER, KATHERINE",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 7185.3,
+        "fy": 2022
+      },
+      {
+        "vendor": "SPOKANE ADULT FAMILY HOME LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 11195.66,
+        "fy": 2022
+      },
+      {
+        "vendor": "SPOKANE BEHAVIORAL HEALTH LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 140.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "SPOKANE CO COMMUNITY SVC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 29283.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "SPOKANE ROYAL PARK CARE, LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 511085.17,
+        "fy": 2022
+      },
+      {
+        "vendor": "SPOKANE VALLEY PARTNERS",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 120.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "ST MARY ADULT FAMILY HOME LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 43048.8,
+        "fy": 2022
+      },
+      {
+        "vendor": "ST NINO INC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 19510.71,
+        "fy": 2022
+      },
+      {
+        "vendor": "STAFFORD HEALTHCARE, SEATAC LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 665100.35,
+        "fy": 2022
+      },
+      {
+        "vendor": "STAND TOGETHER",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 152470.8,
+        "fy": 2022
+      },
+      {
+        "vendor": "STANLEY & UTTERBACK PLLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 44.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "STANTON  VANESSA C",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 270.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "STAR HAVEN CORP",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 4665.12,
+        "fy": 2022
+      },
+      {
+        "vendor": "STAR OF HOPE AFH LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 3110.02,
+        "fy": 2022
+      },
+      {
+        "vendor": "STATE OF WASHINGTON",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 331550.26,
+        "fy": 2022
+      },
+      {
+        "vendor": "STEPANIA, VLADIMER",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 18189.44,
+        "fy": 2022
+      },
+      {
+        "vendor": "STEVEN J TALMADGE PHD",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 510.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "STEVENS COUNTY",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 64123.85,
+        "fy": 2022
+      },
+      {
+        "vendor": "STEVENS, MICHELLE",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 3390.46,
+        "fy": 2022
+      },
+      {
+        "vendor": "STEWART HOME & SCHOOL LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 7908.65,
+        "fy": 2022
+      },
+      {
+        "vendor": "STEWART, SHANNON",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 17552.51,
+        "fy": 2022
+      },
+      {
+        "vendor": "STIFT, MARY",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 1814.7,
+        "fy": 2022
+      },
+      {
+        "vendor": "STONEWALL VALLEYWAY 1 LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 15295.51,
+        "fy": 2022
+      },
+      {
+        "vendor": "STOVER, CINDY",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 7371.35,
+        "fy": 2022
+      },
+      {
+        "vendor": "SUAREZ, ROSARIO",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 15829.98,
+        "fy": 2022
+      },
+      {
+        "vendor": "SUCIU, ADRIANA",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 9322.9,
+        "fy": 2022
+      },
+      {
+        "vendor": "SULLIVAN VENTURE LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 25049.59,
+        "fy": 2022
+      },
+      {
+        "vendor": "SUMMER BREEZE HOME CARE LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 16970.54,
+        "fy": 2022
+      },
+      {
+        "vendor": "SUMMER WOOD OPCO LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 28265.55,
+        "fy": 2022
+      },
+      {
+        "vendor": "SUMMIT REHABILITATION ASSOCIATES",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 191.5,
+        "fy": 2022
+      },
+      {
+        "vendor": "SUMNER COMFORT KEEPERS AFH LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 17850.52,
+        "fy": 2022
+      },
+      {
+        "vendor": "SUNLIGHT ADULT FAMILY HOME LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 20350.05,
+        "fy": 2022
+      },
+      {
+        "vendor": "SUNNY FAMILY ADULT CARE LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 29118.43,
+        "fy": 2022
+      },
+      {
+        "vendor": "SUNNYSIDE COMMUNITY HOSPITAL",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 119.76,
+        "fy": 2022
+      },
+      {
+        "vendor": "SUNRISE GARDEN ADULT FAMILY HOME",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 6920.08,
+        "fy": 2022
+      },
+      {
+        "vendor": "SUNRISE SERVICES",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 4998.11,
+        "fy": 2022
+      },
+      {
+        "vendor": "SUNRISE SERVICES INC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 469.42,
+        "fy": 2022
+      },
+      {
+        "vendor": "SUNRISE SERVICES INC.",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 2377598.87,
+        "fy": 2022
+      },
+      {
+        "vendor": "SUNSET ADULT FAMILY LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 11229.6,
+        "fy": 2022
+      },
+      {
+        "vendor": "SUNSHINE CARE INC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 4054.24,
+        "fy": 2022
+      },
+      {
+        "vendor": "SUNSHINE HEALTH FACILITIES, INC.",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 411092.91,
+        "fy": 2022
+      },
+      {
+        "vendor": "SUNSHINE'S HAVEN ADULT FAMILY HO",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 7240.69,
+        "fy": 2022
+      },
+      {
+        "vendor": "SUPPORT CENTER INC  THE",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 21394.54,
+        "fy": 2022
+      },
+      {
+        "vendor": "SUPPORTED SOLUTION LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 27034.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "SURGICAL ASSOCIATES NORTHWEST",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 22.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "SURGICAL ASSOCIATES PLLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 22.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "SVYRYDOVSKA, VIKTORIIA",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 9212.78,
+        "fy": 2022
+      },
+      {
+        "vendor": "SWAIN'S GENERAL STORE INC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 205.73,
+        "fy": 2022
+      },
+      {
+        "vendor": "SWANSONS WALK-IN CLINIC LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 44.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "SWEDISH MEDICAL CENTER",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 2479.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "SWEET HOME ADULT FAMILY HOME LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 3739.2,
+        "fy": 2022
+      },
+      {
+        "vendor": "SWIFT, EDDISON",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 6003.46,
+        "fy": 2022
+      },
+      {
+        "vendor": "SWOFFORD & HALMA CLINIC INC PS",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 45.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "SYLVIA'S PLACE LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 23846.92,
+        "fy": 2022
+      },
+      {
+        "vendor": "SYNERGY AFH INC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 5678.09,
+        "fy": 2022
+      },
+      {
+        "vendor": "TACOMA LOVING HANDS ADULT FAMILY",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 6117.85,
+        "fy": 2022
+      },
+      {
+        "vendor": "TACOMA LUTHERAN AND RETIREMENT C",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 375633.96,
+        "fy": 2022
+      },
+      {
+        "vendor": "TACOMA NEUROLOGICAL ASOC INC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 22.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "TACOMA PIERCE COUNTY HEALTH DEPT",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 1690.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "TAHOMA HILLS",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 202995.45,
+        "fy": 2022
+      },
+      {
+        "vendor": "TALBOT HILL ADULT FAMILY HOME LL",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 14780.35,
+        "fy": 2022
+      },
+      {
+        "vendor": "TALMADGE  STEVEN JOHN",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 1637.91,
+        "fy": 2022
+      },
+      {
+        "vendor": "TASMALY, MARIYA",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 4153.83,
+        "fy": 2022
+      },
+      {
+        "vendor": "TATE, ANGUS BRENT",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 6419.85,
+        "fy": 2022
+      },
+      {
+        "vendor": "TAVON CENTER",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 35543.36,
+        "fy": 2022
+      },
+      {
+        "vendor": "TAYLOR, GEORGETTE",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 7746.6,
+        "fy": 2022
+      },
+      {
+        "vendor": "TCF NURSING SERVICES INC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 4687.22,
+        "fy": 2022
+      },
+      {
+        "vendor": "TED MAUSSHARDT MA, INC.",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 5405.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "TEKLETSION, BERHAN",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 26515.84,
+        "fy": 2022
+      },
+      {
+        "vendor": "TELECARE MENTAL HEALTH SVCS WA",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 95.5,
+        "fy": 2022
+      },
+      {
+        "vendor": "TELLO, ZANDRIX",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 25320.41,
+        "fy": 2022
+      },
+      {
+        "vendor": "TENDER CARE 2 LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 7240.44,
+        "fy": 2022
+      },
+      {
+        "vendor": "TENDER HEART CARE ADULT FAMILY H",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 5031.68,
+        "fy": 2022
+      },
+      {
+        "vendor": "TENINO SCHOOL DISTRICT 402",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 27.5,
+        "fy": 2022
+      },
+      {
+        "vendor": "TERRILL, MARK",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 9602.25,
+        "fy": 2022
+      },
+      {
+        "vendor": "THE 12TH SENIOR HOME LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 6092.24,
+        "fy": 2022
+      },
+      {
+        "vendor": "THE ARBOR ROSE INC.",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 4028.52,
+        "fy": 2022
+      },
+      {
+        "vendor": "THE ARC OF GRAYS HARBOR",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 768.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "THE ARC OF SPOKANE",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 792847.48,
+        "fy": 2022
+      },
+      {
+        "vendor": "THE BEACON HOUSE AFH INC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 26172.9,
+        "fy": 2022
+      },
+      {
+        "vendor": "THE CAROLINE KLINE GALLAND HOME",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 806475.51,
+        "fy": 2022
+      },
+      {
+        "vendor": "THE COMMUNITAS GROUP",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 456324.56,
+        "fy": 2022
+      },
+      {
+        "vendor": "THE MEADOWS",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 3946.06,
+        "fy": 2022
+      },
+      {
+        "vendor": "THE MOORE THE MERRIER INC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 2558.22,
+        "fy": 2022
+      },
+      {
+        "vendor": "THE VISION ADULT FAMILY HOME LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 107197.84,
+        "fy": 2022
+      },
+      {
+        "vendor": "THIES, DELORIS",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 10761.82,
+        "fy": 2022
+      },
+      {
+        "vendor": "THOMAS, LYNDA",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 4927.06,
+        "fy": 2022
+      },
+      {
+        "vendor": "THREE RIVERS THERAPY LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 26.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "THRIVE MENTAL HEALTH SERVICES LL",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 16954.5,
+        "fy": 2022
+      },
+      {
+        "vendor": "TILDAS ADULT FAMILY HOME LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 18841.33,
+        "fy": 2022
+      },
+      {
+        "vendor": "TJ NURSING SERVICES LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 27011.18,
+        "fy": 2022
+      },
+      {
+        "vendor": "TMS NW PLLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 77.5,
+        "fy": 2022
+      },
+      {
+        "vendor": "TO BE CHERISHED ADULT FAMILY HOM",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 20597.22,
+        "fy": 2022
+      },
+      {
+        "vendor": "TOLIVER  GEORGE SHAYNE",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 47.5,
+        "fy": 2022
+      },
+      {
+        "vendor": "TOLLES STEFFAN R MD",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 41.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "TONDO, RONALDO",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 18482.26,
+        "fy": 2022
+      },
+      {
+        "vendor": "TREE LANE LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 2824.34,
+        "fy": 2022
+      },
+      {
+        "vendor": "TRITTLE CORPORATION",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 22880.04,
+        "fy": 2022
+      },
+      {
+        "vendor": "TUBIC, LJILJANA",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 3125.67,
+        "fy": 2022
+      },
+      {
+        "vendor": "TUGADE, MARICRIS FRANADA",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 30267.76,
+        "fy": 2022
+      },
+      {
+        "vendor": "TWT LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 31364.04,
+        "fy": 2022
+      },
+      {
+        "vendor": "TYRELL ADULT FAMILY HOME LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 41179.62,
+        "fy": 2022
+      },
+      {
+        "vendor": "ULIT, JOSEFINA",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 37444.98,
+        "fy": 2022
+      },
+      {
+        "vendor": "UNIFIED HILL LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 13726.34,
+        "fy": 2022
+      },
+      {
+        "vendor": "UNION ADULT FAMILY HOME, LLC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 7889.04,
+        "fy": 2022
+      },
+      {
+        "vendor": "UNION HILL HEALTHCARE INC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 360477.3,
+        "fy": 2022
+      },
+      {
+        "vendor": "UNITED FRIENDS GROUP HOMES",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 399761.13,
+        "fy": 2022
+      },
+      {
+        "vendor": "UNIV OF WA -CENTER FOR TECH &",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 6501.22,
+        "fy": 2022
+      },
+      {
+        "vendor": "UNIV OF WA -UW REHAB MEDICINE",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 8149.5,
+        "fy": 2022
+      },
+      {
+        "vendor": "UNIV OF WA UW MEDICINE",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 123.68,
+        "fy": 2022
+      },
+      {
+        "vendor": "UNIVERSITY PLACE PEDIATRIC CLINI",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 22.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "UNIVERSITY PLACE SCHOOL DIST 083",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 136.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "UNOGU, DAMIAN",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 41668.15,
+        "fy": 2022
+      },
+      {
+        "vendor": "UPRIVER PLACE, INC.",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 117419.36,
+        "fy": 2022
+      },
+      {
+        "vendor": "URGENT MEDICAL CENTER INC",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 69.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "URSU, DORINA",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 19476.69,
+        "fy": 2022
+      },
+      {
+        "vendor": "US BANK NATIONAL ASSOCIATION",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 2764.58,
+        "fy": 2022
+      },
+      {
+        "vendor": "UW-STUDENT FISCAL SERVICES",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 23574.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "VADIS",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 87355.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "VAIL  DAVID B",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 76.0,
+        "fy": 2022
+      },
+      {
+        "vendor": "VALDEVIESO, MICHELLE",
+        "agency": "Social and Health Services",
+        "fund": "Grants, Benefits & Client Services",
+        "amount": 13434.8,
+        "fy": 2022
+      }
+    ]
+  }
+}
