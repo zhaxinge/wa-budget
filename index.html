@@ -120,6 +120,7 @@ h1{font-size:26px;font-weight:500;color:#111}
             value="https://wa-budget.vercel.app/api/ask"
             placeholder="https://wa-budget.vercel.app/api/ask"
             oninput="onKeyInput()" />
+          <button class="btn" type="button" style="font-size:12px;margin-top:6px" onclick="testBackendConnection()">Test backend connection →</button>
           <label class="key-label" for="api-key-input">
             Optional Anthropic API key <span>· local testing only; do not use for public deployment</span>
           </label>
@@ -129,7 +130,7 @@ h1{font-size:26px;font-weight:500;color:#111}
             oninput="onKeyInput()" />
           <div class="key-status" id="key-status"></div>
           <div class="ai-help">
-            <strong>Recommended:</strong> keep your Claude key on a backend and let this page call <code>/api/ask</code>. Direct browser keys are only for private testing and can expose your key/token budget.
+            <strong>Recommended:</strong> keep your Claude key on Vercel and let this GitHub Pages site call <code>https://wa-budget.vercel.app/api/ask</code>. Direct browser keys are only for private testing and can expose your key/token budget.
           </div>
           <div class="usage-row" id="usage-row"></div>
         </div>
@@ -154,7 +155,7 @@ h1{font-size:26px;font-weight:500;color:#111}
 // Recommended production flow: browser → your backend endpoint → Anthropic API.
 // This prevents exposing your API key and allows server-side rate limits/billing.
 const DEFAULT_MODEL = 'claude-sonnet-4-20250514';
-const DIRECT_BROWSER_ANTHROPIC = true; // private testing only; keep false if you only use a backend.
+const DIRECT_BROWSER_ANTHROPIC = false; // public deployment: use Vercel backend only.
 const MAX_QUESTIONS_PER_SESSION = 20;
 const MAX_QUESTION_CHARS = 500;
 const MAX_OUTPUT_TOKENS = 700;
@@ -202,7 +203,7 @@ const T={URL_BLOCKED:'URL_BLOCKED',COLS_UNDETECTED:'COLS_UNDETECTED',AI_UNAVAILA
 const T_MSG={
   [T.URL_BLOCKED]:    {icon:'🔒',title:"Can't access that URL",          sub:"Download the file and drag it into the drop zone instead."},
   [T.COLS_UNDETECTED]:{icon:'⚠', title:"Columns not recognized",          sub:""},
-  [T.AI_UNAVAILABLE]: {icon:'📡',title:"AI assistant offline",            sub:"The pre-built charts above are computed directly from your data and remain accurate.",retry:true},
+  [T.AI_UNAVAILABLE]: {icon:'📡',title:"AI request failed",               sub:"The backend request did not complete. See the error detail below.",retry:true},
   [T.NO_VALID_ROWS]:  {icon:'⚠', title:"No valid payment rows found",     sub:""},
   [T.AI_FORMAT_ERROR]:{icon:'⚠', title:"Unexpected AI response format",   sub:"Showing raw response. The pre-built charts above are unaffected."},
 };
@@ -221,6 +222,7 @@ function reachTerminalState(state,ctx={},tid='load-status'){
   let sub=cfg.sub;
   if(state===T.COLS_UNDETECTED&&ctx.headers)sub=`Detected columns: ${ctx.headers.slice(0,8).join(', ')}. Needs a vendor name column and a payment amount column.`;
   if(state===T.NO_VALID_ROWS)sub=`Parsed ${ctx.totalRows||0} rows but found ${ctx.filtered||0} with a valid vendor name and amount > 0.`;
+  if(state===T.AI_UNAVAILABLE && ctx.error)sub=`${cfg.sub} Error: ${escapeHtml(ctx.error)}`;
   const retry=cfg.retry?`<button class="btn" style="margin-top:8px;font-size:12px" onclick="handleAsk()">Retry ↗</button>`:'';
   document.getElementById(tid).innerHTML=`<div class="alert alert-err"><span>${cfg.icon}</span><div class="alert-body"><div class="alert-title">${cfg.title}</div><div class="alert-sub">${sub}</div><div class="terminal-badge">STATE: ${state}</div>${retry}</div></div>`;
 }
@@ -694,6 +696,33 @@ dz.addEventListener('dragleave',()=>dz.classList.remove('drag-over'));
 dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f)loadFromFile(f);});
 
 // ── AI Q&A ────────────────────────────────────────────────────────────────────
+async function testBackendConnection(){
+  const endpoint=getProxyUrl();
+  document.getElementById('ai-status').innerHTML=`<div class="alert alert-info"><span>⌛</span><div class="alert-body">Testing backend connection…</div></div>`;
+  try{
+    const res=await fetch(endpoint,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        question:'Connection test. Return a short JSON answer.',
+        verifiedFacts:{
+          VERIFIED_FACTS:{
+            rule:'AUTHORITATIVE_GROUND_TRUTH',
+            total_payments_formatted:'$10B',
+            top_vendor:{name:'Test Vendor',amount_formatted:'$1B'}
+          }
+        }
+      })
+    });
+    const body=await res.text();
+    let d={}; try{d=body?JSON.parse(body):{};}catch{d={raw:body};}
+    if(!res.ok)throw new Error(d.error||d.detail||d.raw||`Backend ${res.status}`);
+    document.getElementById('ai-status').innerHTML=`<div class="alert alert-ok"><span>✓</span><div class="alert-body"><div class="alert-title">Backend connected</div><div class="alert-sub">Vercel /api/ask responded successfully.</div></div></div>`;
+  }catch(e){
+    document.getElementById('ai-status').innerHTML=`<div class="alert alert-err"><span>⚠</span><div class="alert-body"><div class="alert-title">Backend test failed</div><div class="alert-sub">${escapeHtml(e.message)}</div></div></div>`;
+  }
+}
+
 function chipAsk(q){document.getElementById('q-input').value=q;handleAsk();}
 
 async function callAI(q){
