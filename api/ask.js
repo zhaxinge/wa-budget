@@ -34,7 +34,7 @@ export default async function handler(req, res) {
     if (question.length > 500) return res.status(400).json({ error: "Question is too long." });
     if (!verifiedFacts || typeof verifiedFacts !== "object") return res.status(400).json({ error: "Missing verifiedFacts object." });
 
-    const model = process.env.CLAUDE_MODEL || "claude-3-5-haiku-20241022";
+    const model = process.env.CLAUDE_MODEL;
 
     const systemPrompt = `
 You are a careful public-budget data analyst.
