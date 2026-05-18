@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>WA Budget Lens — Large File Safe</title>
+<title>WA Budget Lens — Backend Upload Version</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,-apple-system,sans-serif;color:#111;background:#fafaf8;min-height:100vh;padding:2rem 1rem}
@@ -24,7 +24,7 @@ h1{font-size:26px;font-weight:500;color:#111}
 .alert-warn{background:#fffbeb;color:#92400e;border:1px solid #fcd34d}
 .alert-body{flex:1}.alert-title{font-weight:500;margin-bottom:2px}.alert-sub{font-size:12px;opacity:.85;line-height:1.5}
 .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:1rem 0}
-@media(max-width:600px){.metrics{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.metrics{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr!important}.q-row{flex-direction:column}}
 .metric{background:#f5f5f2;border-radius:9px;padding:13px 15px}
 .metric-label{font-size:11px;color:#888;margin-bottom:4px}.metric-val{font-size:20px;font-weight:500;color:#111}
 .section-head{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#bbb;margin:2rem 0 1rem;display:flex;align-items:center;gap:8px}
@@ -42,23 +42,28 @@ code{background:#f7f7f5;border:1px solid #eee;border-radius:5px;padding:1px 4px}
 <div class="wrap">
   <div class="eyebrow">Washington State · Fiscal Data</div>
   <h1>Budget Lens</h1>
-  <p class="sub">Large-file safe version: load a small precomputed <code>summary.json</code>, then let users ask questions against verified facts.</p>
+  <p class="sub">Users upload Excel/CSV. The backend creates verified facts, then the AI answers from those computed facts.</p>
 
   <div class="card">
-    <h3 style="font-size:15px;font-weight:500;margin-bottom:8px">Load optimized data</h3>
-    <button class="btn btn-info" onclick="loadDefaultSummary()">Load summary.json →</button>
+    <h3 style="font-size:15px;font-weight:500;margin-bottom:8px">Upload data</h3>
+
+    <label style="font-size:12px;color:#666;display:block;margin-bottom:5px">Backend processing endpoint</label>
+    <input class="key-input" id="process-url-input" value="https://wa-budget.vercel.app/api/process-data" />
+
     <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
-      📂 Drop <strong>summary.json</strong> here, or click to browse
-      <input type="file" id="file-input" accept=".json" style="display:none" onchange="loadSummaryFile(this.files[0])">
+      📂 Drop an Excel/CSV file here, or click to browse
+      <input type="file" id="file-input" accept=".xlsx,.xls,.csv" style="display:none" onchange="uploadDataFile(this.files[0])">
     </div>
-    <div id="load-status"></div>
+
     <div class="alert alert-warn">
       <span>⚠</span>
       <div class="alert-body">
-        <div class="alert-title">Do not upload the full Excel in the browser for large files</div>
-        <div class="alert-sub">Run <code>python tools/precompute_summary.py Vendor-Payments.xlsx summary.json</code> once, then host/load the generated <code>summary.json</code>. This prevents the blank-page crash.</div>
+        <div class="alert-title">Large file note</div>
+        <div class="alert-sub">This version does not parse Excel in the browser. It uploads the file to the backend for processing. Vercel still has upload/runtime limits; for very large files, use a dedicated backend or preloaded hosted dataset.</div>
       </div>
     </div>
+
+    <div id="load-status"></div>
   </div>
 
   <div id="dashboard" style="display:none">
@@ -75,7 +80,7 @@ code{background:#f7f7f5;border:1px solid #eee;border-radius:5px;padding:1px 4px}
     <div class="section-head">Ask your own question</div>
     <div class="card">
       <label style="font-size:12px;color:#666;display:block;margin-bottom:5px">AI backend endpoint</label>
-      <input class="key-input" id="proxy-url-input" value="https://wa-budget.vercel.app/api/ask" />
+      <input class="key-input" id="ask-url-input" value="https://wa-budget.vercel.app/api/ask" />
       <div class="q-row">
         <input type="text" id="q-input" placeholder="e.g. Which vendors grew the fastest?" />
         <button class="btn btn-info" id="ask-btn" onclick="handleAsk()">Ask ↗</button>
@@ -99,44 +104,61 @@ function fmt(n){
   return '$'+Math.round(n).toLocaleString();
 }
 function escapeHtml(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
-function status(msg,type='info'){document.getElementById('load-status').innerHTML=`<div class="alert alert-${type}"><span>${type==='ok'?'✓':type==='err'?'⚠':'⌛'}</span><div class="alert-body">${msg}</div></div>`;}
+function show(id,msg,type='info'){document.getElementById(id).innerHTML=`<div class="alert alert-${type}"><span>${type==='ok'?'✓':type==='err'?'⚠':'⌛'}</span><div class="alert-body">${msg}</div></div>`;}
 
-async function loadDefaultSummary(){
-  try{
-    status('Loading summary.json…','info');
-    const res=await fetch('./summary.json');
-    if(!res.ok)throw new Error('Could not find summary.json next to index.html');
-    loadSummary(await res.json());
-  }catch(e){status(escapeHtml(e.message),'err');}
-}
-
-function loadSummaryFile(file){
+async function uploadDataFile(file){
   if(!file)return;
-  if(!file.name.toLowerCase().endsWith('.json')){
-    status('Please upload the generated summary.json file, not the full Excel file.','err');return;
+
+  const endpoint=document.getElementById('process-url-input').value.trim();
+  if(!endpoint){show('load-status','Missing backend processing endpoint.','err');return;}
+
+  const ext=file.name.toLowerCase().split('.').pop();
+  if(!['xlsx','xls','csv'].includes(ext)){
+    show('load-status','Please upload .xlsx, .xls, or .csv.','err');return;
   }
-  const reader=new FileReader();
-  reader.onload=e=>{
-    try{loadSummary(JSON.parse(e.target.result));}
-    catch(err){status('Could not parse JSON summary: '+escapeHtml(err.message),'err');}
-  };
-  reader.readAsText(file);
+
+  const mb=file.size/1024/1024;
+  if(mb>20){
+    show('load-status',`This file is ${mb.toFixed(1)} MB. It may exceed Vercel limits. Use CSV, reduce file size, or move processing to a larger backend.`,'warn');
+  }else{
+    show('load-status',`Uploading ${escapeHtml(file.name)} (${mb.toFixed(1)} MB) to backend for processing…`,'info');
+  }
+
+  try{
+    const buf=await file.arrayBuffer();
+
+    const res=await fetch(endpoint,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/octet-stream',
+        'X-File-Name':encodeURIComponent(file.name)
+      },
+      body:buf
+    });
+
+    const text=await res.text();
+    let payload={}; try{payload=text?JSON.parse(text):{};}catch{payload={raw:text};}
+    if(!res.ok)throw new Error(payload.error||payload.detail||payload.raw||`Backend ${res.status}`);
+
+    loadSummary(payload);
+  }catch(e){
+    show('load-status',`Upload/process failed: ${escapeHtml(e.message)}`,'err');
+  }
 }
 
 function loadSummary(summary){
   AI_CONTEXT = summary.AI_CONTEXT || summary;
   VERIFIED_FACTS = AI_CONTEXT.VERIFIED_FACTS || summary.VERIFIED_FACTS;
-  if(!VERIFIED_FACTS)throw new Error('summary.json missing VERIFIED_FACTS');
-  window.AI_CONTEXT=AI_CONTEXT; window.VERIFIED_FACTS=VERIFIED_FACTS;
+  if(!VERIFIED_FACTS)throw new Error('Backend response missing VERIFIED_FACTS');
 
+  window.AI_CONTEXT=AI_CONTEXT; window.VERIFIED_FACTS=VERIFIED_FACTS;
   document.getElementById('dashboard').style.display='block';
-  status('✓ Optimized summary loaded. AI will use VERIFIED_FACTS as ground truth.','ok');
+  show('load-status','✓ Backend processed the file and created verified facts for AI grounding.','ok');
   buildDashboard();
 }
 
-function li(items, mapFn){
-  return (items||[]).slice(0,8).map(mapFn).join('');
-}
+function li(items, mapFn){return (items||[]).slice(0,8).map(mapFn).join('');}
+
 function buildDashboard(){
   const f=VERIFIED_FACTS;
   document.getElementById('metrics-row').innerHTML=[
@@ -150,20 +172,20 @@ function buildDashboard(){
   document.getElementById('top-agencies').innerHTML=li(f.top_agencies, x=>`<li><strong>${escapeHtml(x.name)}</strong> — ${escapeHtml(x.amount_formatted||fmt(x.amount))}</li>`);
   document.getElementById('fund-breakdown').innerHTML=li(f.fund_breakdown, x=>`<li><strong>${escapeHtml(x.name)}</strong> — ${escapeHtml(x.amount_formatted||fmt(x.amount))} (${x.share_percent||0}%)</li>`);
   document.getElementById('vendor-growth').innerHTML=li(f.fastest_vendor_growth, x=>`<li><strong>${escapeHtml(x.vendor)}</strong> — ${escapeHtml(x.absolute_change_formatted||fmt(Math.abs(x.absolute_change||0)))} ${escapeHtml(x.direction||'increase')}</li>`);
-  document.getElementById('footer-note').textContent=`Grounded in precomputed full-dataset facts · sample rows included: ${(AI_CONTEXT.sample_rows||[]).length}`;
+  document.getElementById('footer-note').textContent=`Grounded in backend-computed full-dataset facts · sample rows included: ${(AI_CONTEXT.sample_rows||[]).length}`;
 }
 
 async function handleAsk(){
   const q=document.getElementById('q-input').value.trim();
-  const endpoint=document.getElementById('proxy-url-input').value.trim();
-  if(!AI_CONTEXT){document.getElementById('ai-status').innerHTML='<div class="alert alert-err"><span>⚠</span><div class="alert-body">Load summary.json first.</div></div>';return;}
+  const endpoint=document.getElementById('ask-url-input').value.trim();
+  if(!AI_CONTEXT){show('ai-status','Load and process a data file first.','err');return;}
   if(!q)return;
-  if(q.length>MAX_QUESTION_CHARS){document.getElementById('ai-status').innerHTML='<div class="alert alert-err"><span>⚠</span><div class="alert-body">Question is too long.</div></div>';return;}
-  if(askCount>=MAX_QUESTIONS_PER_SESSION){document.getElementById('ai-status').innerHTML='<div class="alert alert-err"><span>⚠</span><div class="alert-body">Session question limit reached.</div></div>';return;}
+  if(q.length>MAX_QUESTION_CHARS){show('ai-status','Question is too long.','err');return;}
+  if(askCount>=MAX_QUESTIONS_PER_SESSION){show('ai-status','Session question limit reached.','err');return;}
 
   askCount++;
   document.getElementById('ask-btn').disabled=true;
-  document.getElementById('ai-status').innerHTML='<div class="alert alert-info"><span>⌛</span><div class="alert-body">Asking AI using precomputed verified facts…</div></div>';
+  show('ai-status','Asking AI using backend-computed verified facts…','info');
   document.getElementById('ai-result').innerHTML='';
 
   try{
@@ -171,19 +193,21 @@ async function handleAsk(){
     const body=await res.text();
     let d={}; try{d=body?JSON.parse(body):{};}catch{d={answer:body};}
     if(!res.ok)throw new Error(d.error||d.detail||body||`Backend ${res.status}`);
+
     let answer=d.answer||'';
     let parsed=null;
     try{parsed=JSON.parse(String(answer).replace(/```json|```/g,'').trim());}catch{}
     const narrative=parsed?.narrative || answer;
     const highlights=parsed?.highlights || [];
-    document.getElementById('ai-status').innerHTML='<div class="alert alert-ok"><span>✓</span><div class="alert-body">Answer generated from verified facts.</div></div>';
+
+    show('ai-status','✓ Answer generated from verified facts.','ok');
     document.getElementById('ai-result').innerHTML=`<div class="result-box">
       ${highlights.length?`<div style="display:grid;gap:8px;margin-bottom:12px">${highlights.slice(0,3).map(h=>`<div class="metric"><div class="metric-label">${escapeHtml(h.label)}</div><div class="metric-val">${escapeHtml(h.value)}</div><div style="font-size:11px;color:#999">${escapeHtml(h.context||'')}</div></div>`).join('')}</div>`:''}
       <p class="narrative">${escapeHtml(narrative)}</p>
       <div style="font-size:11px;color:#aaa;margin-top:10px">Model usage: ${d.usage?`${d.usage.input_tokens||0} input · ${d.usage.output_tokens||0} output tokens`:'not returned'}</div>
     </div>`;
   }catch(e){
-    document.getElementById('ai-status').innerHTML=`<div class="alert alert-err"><span>⚠</span><div class="alert-body"><div class="alert-title">AI request failed</div><div class="alert-sub">${escapeHtml(e.message)}</div></div></div>`;
+    show('ai-status',`AI request failed: ${escapeHtml(e.message)}`,'err');
   }finally{
     document.getElementById('ask-btn').disabled=false;
   }
@@ -193,7 +217,7 @@ document.getElementById('q-input').addEventListener('keydown',e=>{if(e.key==='En
 const dz=document.getElementById('drop-zone');
 dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag-over')});
 dz.addEventListener('dragleave',()=>dz.classList.remove('drag-over'));
-dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f)loadSummaryFile(f);});
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f)uploadDataFile(f);});
 </script>
 </body>
 </html>
