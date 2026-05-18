@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>WA Budget Lens — Vendor Payment Explorer</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;color:#111;background:#fafaf8;min-height:100vh;padding:2rem 1rem}
+.wrap{max-width:720px;margin:0 auto}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#999;margin-bottom:6px}
+h1{font-size:26px;font-weight:500;color:#111}
+.sub{font-size:15px;color:#666;margin-top:6px;line-height:1.5}
+.card{border:1px solid #e0e0d8;border-radius:14px;padding:20px;background:#fff;margin:1.25rem 0}
+.load-card h3{font-size:15px;font-weight:500;margin-bottom:14px;color:#333}
+.url-row{display:flex;gap:8px;margin-bottom:12px}
+.url-row input{flex:1;font-size:13px;padding:9px 12px;border:1px solid #ddd;border-radius:9px;background:#f7f7f5;color:#111;outline:none}
+.url-row input:focus{border-color:#999}
+.btn{padding:8px 16px;background:transparent;border:1px solid #ddd;border-radius:9px;cursor:pointer;font-size:13px;color:#333;transition:background .15s;font-family:inherit;white-space:nowrap}
+.btn:hover:not(:disabled){background:#f0f0ec}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-info{border-color:#2563b0;color:#1e5fa0}
+.divider-row{display:flex;align-items:center;gap:10px;margin:12px 0;color:#bbb;font-size:12px}
+.divider-row::before,.divider-row::after{content:"";flex:1;border-top:1px solid #eee}
+.drop-zone{border:1px dashed #ccc;border-radius:9px;padding:18px;text-align:center;cursor:pointer;font-size:13px;color:#888;transition:border-color .15s}
+.drop-zone:hover,.drop-zone.drag-over{border-color:#555;color:#333}
+.sample-row{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid #eee}
+.sample-row span{font-size:12px;color:#aaa}
+.alert{font-size:13px;padding:10px 12px;border-radius:8px;margin:8px 0;display:flex;align-items:flex-start;gap:8px}
+.alert-ok  {background:#edfaf4;color:#1a7a4a;border:1px solid #b6e8cd}
+.alert-err {background:#fff0f0;color:#c0392b;border:1px solid #f5c6c6}
+.alert-info{background:#f0f4ff;color:#2c5aa0;border:1px solid #c5d5f5}
+.alert-warn{background:#fffbeb;color:#92400e;border:1px solid #fcd34d}
+.alert-body{flex:1}
+.alert-title{font-weight:500;margin-bottom:2px}
+.alert-sub{font-size:12px;opacity:.85;line-height:1.5}
+.terminal-badge{font-size:10px;font-family:monospace;opacity:.55;margin-top:3px}
+.dq-bar{background:#f5f5f2;border:1px solid #e8e8e4;border-radius:8px;padding:10px 14px;margin:1rem 0;display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:#777}
+.dq-ok{color:#1a7a4a}.dq-warn{color:#b45309}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:1rem 0}
+@media(max-width:560px){.metrics{grid-template-columns:repeat(2,1fr)}.insight-grid{grid-template-columns:1fr!important}}
+.metric{background:#f5f5f2;border-radius:9px;padding:13px 15px}
+.metric-label{font-size:11px;color:#888;margin-bottom:4px}
+.metric-val{font-size:20px;font-weight:500;color:#111}
+.section-head{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#bbb;margin:2rem 0 1rem;display:flex;align-items:center;gap:8px}
+.section-head::after{content:"";flex:1;border-top:1px solid #eee}
+.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.insight-card{border:1px solid #e8e8e4;border-radius:12px;padding:16px;background:#fff}
+.iq{font-size:12px;font-weight:600;color:#888;margin-bottom:5px}
+.ifinding{font-size:13px;line-height:1.5;color:#222;margin-bottom:12px}
+.ifinding strong{font-weight:600}
+.chart-wrap{position:relative;width:100%}
+.verified-badge{font-size:10px;color:#1a7a4a;margin-top:8px}
+.footer-note{font-size:11px;color:#ccc;line-height:1.6;margin-top:2rem;padding-top:1.5rem;border-top:1px solid #eee}
+#dashboard{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Washington State · Fiscal Data</div>
+  <h1>Budget Lens</h1>
+  <p class="sub">Understand Washington's vendor payments without writing a single query.</p>
+
+  <div class="card load-card">
+    <h3>Load your data</h3>
+    <div class="url-row">
+      <input type="text" id="url-input" placeholder="Paste Excel file URL (Google Drive, Dropbox, direct link…)" />
+      <button class="btn btn-info" id="url-btn" onclick="loadFromUrl()">Load ↗</button>
+    </div>
+    <div id="url-hint" style="font-size:12px;color:#999;margin-bottom:6px;display:none"></div>
+    <div class="divider-row">or drag & drop</div>
+    <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+      📂 Drop an .xlsx file here, or click to browse
+      <input type="file" id="file-input" accept=".xlsx,.xls" style="display:none" onchange="loadFromFile(this.files[0])">
+    </div>
+    <div class="sample-row">
+      <span>No file? Preview with representative WA data</span>
+      <button class="btn" onclick="loadSample()">Use sample data →</button>
+    </div>
+    <div id="load-status"></div>
+  </div>
+
+  <div id="dashboard">
+    <div id="dq-bar"></div>
+    <div class="metrics" id="metrics-row"></div>
+    <div class="section-head">Key questions — answered directly from data</div>
+    <div class="insight-grid" id="insight-grid"></div>
+
+    <!-- AI Q&A removed from this export.
+         To restore: integrate Anthropic Messages API (claude-sonnet-4-20250514).
+         Inject VERIFIED_FACTS into system prompt. Log all interactions to /api/v1/audit.
+         See README.md for full architecture and audit schema. -->
+
+    <p class="footer-note" id="footer-note"></p>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const AUDIT={DATA_LOAD_ATTEMPT:'DATA_LOAD_ATTEMPT',DATA_LOAD_SUCCESS:'DATA_LOAD_SUCCESS',DATA_LOAD_ERROR:'DATA_LOAD_ERROR',TERMINAL_STATE:'TERMINAL_STATE'};
+const T={URL_BLOCKED:'URL_BLOCKED',COLS_UNDETECTED:'COLS_UNDETECTED',NO_VALID_ROWS:'NO_VALID_ROWS'};
+const T_CONFIG={
+  [T.URL_BLOCKED]:    {icon:'🔒',title:"Can't access that URL",       sub:"Download the file and drag it into the drop zone instead."},
+  [T.COLS_UNDETECTED]:{icon:'⚠', title:"Columns not recognized",       sub:""},
+  [T.NO_VALID_ROWS]:  {icon:'⚠', title:"No payment data found",        sub:""},
+};
+const SESSION_ID=Math.random().toString(36).slice(2,10);
+function auditLog(ev){const e={ts:new Date().toISOString(),session:SESSION_ID,env:'export-no-ai',...ev};console.log('[WA_BUDGET_AUDIT]',JSON.stringify(e,null,2));}
+function reachTerminalState(state,ctx={},tid='load-status'){
+  auditLog({type:AUDIT.TERMINAL_STATE,state,...ctx});
+  const cfg=T_CONFIG[state];if(!cfg)return;
+  let sub=cfg.sub;
+  if(state===T.COLS_UNDETECTED&&ctx.headers)sub=`Detected: ${ctx.headers.slice(0,8).join(', ')}. Needs a vendor name and payment amount column.`;
+  if(state===T.NO_VALID_ROWS)sub=`Parsed ${ctx.totalRows||0} rows but found ${ctx.filtered||0} with valid vendor names and amounts.`;
+  document.getElementById(tid).innerHTML=`<div class="alert alert-err"><span>${cfg.icon}</span><div class="alert-body"><div class="alert-title">${cfg.title}</div><div class="alert-sub">${sub}</div><div class="terminal-badge">STATE: ${state}</div></div></div>`;
+}
+const SAMPLE=[
+  {vendor:"Molina Healthcare of WA",agency:"Health Care Authority",fund:"Federal/Grants",fy:2021,amount:1842300000},
+  {vendor:"Community Health Plan of WA",agency:"Health Care Authority",fund:"Federal/Grants",fy:2021,amount:1203400000},
+  {vendor:"Coordinated Care",agency:"Health Care Authority",fund:"Federal/Grants",fy:2021,amount:934500000},
+  {vendor:"Amerigroup Washington",agency:"Health Care Authority",fund:"Federal/Grants",fy:2021,amount:812300000},
+  {vendor:"Kiewit Infrastructure West",agency:"Dept of Transportation",fund:"Capital",fy:2021,amount:423100000},
+  {vendor:"Graham Contracting",agency:"Dept of Transportation",fund:"Capital",fy:2021,amount:289400000},
+  {vendor:"Flatiron West",agency:"Dept of Transportation",fund:"Capital",fy:2021,amount:198200000},
+  {vendor:"MultiCare Health System",agency:"Dept of Social & Health Svcs",fund:"General Fund",fy:2021,amount:312400000},
+  {vendor:"Providence Health & Svcs",agency:"Dept of Social & Health Svcs",fund:"General Fund",fy:2021,amount:287600000},
+  {vendor:"Premera Blue Cross",agency:"Dept of Social & Health Svcs",fund:"Other Operating",fy:2021,amount:234100000},
+  {vendor:"Microsoft Corporation",agency:"Office of Financial Mgmt",fund:"General Fund",fy:2021,amount:87400000},
+  {vendor:"Amazon Web Services",agency:"Office of Financial Mgmt",fund:"General Fund",fy:2021,amount:54200000},
+  {vendor:"Centurion of Washington",agency:"Dept of Corrections",fund:"General Fund",fy:2021,amount:143200000},
+  {vendor:"Trinity Services Group",agency:"Dept of Corrections",fund:"General Fund",fy:2021,amount:89300000},
+  {vendor:"Maximus Federal Services",agency:"Employment Security Dept",fund:"Federal/Grants",fy:2021,amount:122500000},
+  {vendor:"YMCA of Greater Seattle",agency:"Dept of Children Youth Fams",fund:"General Fund",fy:2021,amount:78200000},
+  {vendor:"Community Action Agencies",agency:"Dept of Commerce",fund:"Federal/Grants",fy:2021,amount:156300000},
+  {vendor:"Deloitte Consulting",agency:"University of Washington",fund:"Federal/Grants",fy:2021,amount:67800000},
+  {vendor:"Clean Harbors Environmental",agency:"Dept of Ecology",fund:"Other Operating",fy:2021,amount:38900000},
+  {vendor:"Pacific Reforestation Inc",agency:"Dept of Natural Resources",fund:"Other Operating",fy:2021,amount:45600000},
+  {vendor:"Molina Healthcare of WA",agency:"Health Care Authority",fund:"Federal/Grants",fy:2022,amount:2134500000},
+  {vendor:"Community Health Plan of WA",agency:"Health Care Authority",fund:"Federal/Grants",fy:2022,amount:1389200000},
+  {vendor:"Coordinated Care",agency:"Health Care Authority",fund:"Federal/Grants",fy:2022,amount:1102300000},
+  {vendor:"Amerigroup Washington",agency:"Health Care Authority",fund:"Federal/Grants",fy:2022,amount:943600000},
+  {vendor:"Kiewit Infrastructure West",agency:"Dept of Transportation",fund:"Capital",fy:2022,amount:512300000},
+  {vendor:"Graham Contracting",agency:"Dept of Transportation",fund:"Capital",fy:2022,amount:334100000},
+  {vendor:"Flatiron West",agency:"Dept of Transportation",fund:"Capital",fy:2022,amount:267800000},
+  {vendor:"MultiCare Health System",agency:"Dept of Social & Health Svcs",fund:"General Fund",fy:2022,amount:345600000},
+  {vendor:"Providence Health & Svcs",agency:"Dept of Social & Health Svcs",fund:"General Fund",fy:2022,amount:312100000},
+  {vendor:"Premera Blue Cross",agency:"Dept of Social & Health Svcs",fund:"Other Operating",fy:2022,amount:267300000},
+  {vendor:"Microsoft Corporation",agency:"Office of Financial Mgmt",fund:"General Fund",fy:2022,amount:98700000},
+  {vendor:"Amazon Web Services",agency:"Office of Financial Mgmt",fund:"General Fund",fy:2022,amount:72100000},
+  {vendor:"Centurion of Washington",agency:"Dept of Corrections",fund:"General Fund",fy:2022,amount:167400000},
+  {vendor:"Trinity Services Group",agency:"Dept of Corrections",fund:"General Fund",fy:2022,amount:98100000},
+  {vendor:"Maximus Federal Services",agency:"Employment Security Dept",fund:"Federal/Grants",fy:2022,amount:98400000},
+  {vendor:"YMCA of Greater Seattle",agency:"Dept of Children Youth Fams",fund:"General Fund",fy:2022,amount:89300000},
+  {vendor:"Community Action Agencies",agency:"Dept of Commerce",fund:"Federal/Grants",fy:2022,amount:187600000},
+  {vendor:"Deloitte Consulting",agency:"University of Washington",fund:"Federal/Grants",fy:2022,amount:81200000},
+  {vendor:"Clean Harbors Environmental",agency:"Dept of Ecology",fund:"Other Operating",fy:2022,amount:44200000},
+  {vendor:"Pacific Reforestation Inc",agency:"Dept of Natural Resources",fund:"Other Operating",fy:2022,amount:52300000},
+  {vendor:"Molina Healthcare of WA",agency:"Health Care Authority",fund:"Federal/Grants",fy:2023,amount:2489300000},
+  {vendor:"Community Health Plan of WA",agency:"Health Care Authority",fund:"Federal/Grants",fy:2023,amount:1612400000},
+  {vendor:"Coordinated Care",agency:"Health Care Authority",fund:"Federal/Grants",fy:2023,amount:1289100000},
+  {vendor:"Amerigroup Washington",agency:"Health Care Authority",fund:"Federal/Grants",fy:2023,amount:1102400000},
+  {vendor:"Kiewit Infrastructure West",agency:"Dept of Transportation",fund:"Capital",fy:2023,amount:634200000},
+  {vendor:"Graham Contracting",agency:"Dept of Transportation",fund:"Capital",fy:2023,amount:398700000},
+  {vendor:"Flatiron West",agency:"Dept of Transportation",fund:"Capital",fy:2023,amount:312400000},
+  {vendor:"MultiCare Health System",agency:"Dept of Social & Health Svcs",fund:"General Fund",fy:2023,amount:378900000},
+  {vendor:"Providence Health & Svcs",agency:"Dept of Social & Health Svcs",fund:"General Fund",fy:2023,amount:341200000},
+  {vendor:"Premera Blue Cross",agency:"Dept of Social & Health Svcs",fund:"Other Operating",fy:2023,amount:298400000},
+  {vendor:"Microsoft Corporation",agency:"Office of Financial Mgmt",fund:"General Fund",fy:2023,amount:112400000},
+  {vendor:"Amazon Web Services",agency:"Office of Financial Mgmt",fund:"General Fund",fy:2023,amount:89300000},
+  {vendor:"Centurion of Washington",agency:"Dept of Corrections",fund:"General Fund",fy:2023,amount:189200000},
+  {vendor:"Trinity Services Group",agency:"Dept of Corrections",fund:"General Fund",fy:2023,amount:108700000},
+  {vendor:"Maximus Federal Services",agency:"Employment Security Dept",fund:"Federal/Grants",fy:2023,amount:87600000},
+  {vendor:"YMCA of Greater Seattle",agency:"Dept of Children Youth Fams",fund:"General Fund",fy:2023,amount:102400000},
+  {vendor:"Community Action Agencies",agency:"Dept of Commerce",fund:"Federal/Grants",fy:2023,amount:214900000},
+  {vendor:"Deloitte Consulting",agency:"University of Washington",fund:"Federal/Grants",fy:2023,amount:94300000},
+  {vendor:"Clean Harbors Environmental",agency:"Dept of Ecology",fund:"Other Operating",fy:2023,amount:51400000},
+  {vendor:"Pacific Reforestation Inc",agency:"Dept of Natural Resources",fund:"Other Operating",fy:2023,amount:61200000},
+];
+let DATA=[],VF={},activeCharts={},isSample=false;
+const fmt=n=>n>=1e9?'$'+(n/1e9).toFixed(1)+'B':n>=1e6?'$'+Math.round(n/1e6)+'M':'$'+n.toLocaleString();
+const pct=(a,b)=>b?Math.round(a/b*100):0;
+const groupBy=f=>{const m={};DATA.forEach(r=>{m[r[f]]=(m[r[f]]||0)+r.amount});return Object.entries(m).sort((a,b)=>b[1]-a[1]);};
+const unique=f=>[...new Set(DATA.map(r=>r[f]))];
+function computeVF(){
+  const total=DATA.reduce((s,r)=>s+r.amount,0);
+  const bv=groupBy('vendor'),ba=groupBy('agency'),bf=groupBy('fund');
+  const years=unique('fy').filter(y=>y>1900).sort();
+  return{total,topVendor:bv[0]?.[0]||'—',topVendorAmt:bv[0]?.[1]||0,topAgency:ba[0]?.[0]||'—',topAgencyAmt:ba[0]?.[1]||0,
+    topFund:bf[0]?.[0]||'—',topFundPct:pct(bf[0]?.[1]||0,total),years,vendorCount:unique('vendor').length,agencyCount:unique('agency').length};
+}
+function normalizeUrl(url){const gd=url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);if(gd)return`https://drive.google.com/uc?export=download&id=${gd[1]}`;if(url.includes('dropbox.com'))return url.replace('?dl=0','?dl=1');return url;}
+function detectCols(headers){const lc=h=>h.toLowerCase().replace(/[^a-z0-9 ]/g,'');const find=(...kws)=>headers.find(h=>kws.some(kw=>lc(h).includes(kw)))||null;return{vendor:find('vendor','payee','supplier','name'),agency:find('agency','department','dept'),amount:find('amount','payment','paid','total','sum','value'),fund:find('fund','funding','source','type'),year:find('year','fiscal','fy','period')};}
+function parseSheet(wb){
+  const sheet=wb.Sheets[wb.SheetNames[0]];const json=XLSX.utils.sheet_to_json(sheet,{defval:null,raw:false});
+  if(!json.length)return{error:T.NO_VALID_ROWS,ctx:{totalRows:0,filtered:0}};
+  const headers=Object.keys(json[0]);const cols=detectCols(headers);
+  if(!cols.vendor&&!cols.amount)return{error:T.COLS_UNDETECTED,ctx:{headers}};
+  const rows=json.map(r=>({vendor:cols.vendor?String(r[cols.vendor]||'').trim():'Unknown',agency:cols.agency?String(r[cols.agency]||'').trim():'Unknown',fund:cols.fund?String(r[cols.fund]||'').trim():'Unknown',fy:cols.year?(parseInt(String(r[cols.year]||'').replace(/\D/g,''))||0):0,amount:cols.amount?(parseFloat(String(r[cols.amount]||'0').replace(/[$,\s]/g,''))||0):0})).filter(r=>r.vendor&&r.vendor!=='Unknown'&&r.amount>0);
+  if(!rows.length)return{error:T.NO_VALID_ROWS,ctx:{totalRows:json.length,filtered:0}};
+  return{rows,cols,headers};
+}
+function showStatus(msg,type){document.getElementById('load-status').innerHTML=`<div class="alert alert-${type}"><span>${type==='ok'?'✓':'⌛'}</span><div class="alert-body">${msg}</div></div>`;}
+async function loadFromUrl(){
+  const raw=document.getElementById('url-input').value.trim();if(!raw){return;}
+  const url=normalizeUrl(raw);if(url!==raw){const h=document.getElementById('url-hint');h.style.display='block';h.textContent='→ '+url;}
+  showStatus('Fetching file…','info');document.getElementById('url-btn').disabled=true;
+  auditLog({type:AUDIT.DATA_LOAD_ATTEMPT,source:'url',url});
+  try{const res=await fetch(url);if(!res.ok)throw new Error('HTTP '+res.status);const buf=await res.arrayBuffer();finalize(parseSheet(XLSX.read(buf,{type:'array'})),false,'url:'+url);}
+  catch(e){reachTerminalState(T.URL_BLOCKED,{url,error:e.message},'load-status');auditLog({type:AUDIT.DATA_LOAD_ERROR,source:'url',url,error:e.message});document.getElementById('url-btn').disabled=false;}
+}
+function loadFromFile(file){if(!file)return;showStatus('Reading file…','info');auditLog({type:AUDIT.DATA_LOAD_ATTEMPT,source:'file',filename:file.name,sizeKB:Math.round(file.size/1024)});const r=new FileReader();r.onload=e=>{try{finalize(parseSheet(XLSX.read(e.target.result,{type:'array'})),false,'file:'+file.name);}catch{showStatus('Could not parse — ensure it is a valid .xlsx file.','err');}};r.readAsArrayBuffer(file);}
+function loadSample(){auditLog({type:AUDIT.DATA_LOAD_ATTEMPT,source:'sample'});finalize({rows:SAMPLE,cols:{},headers:[]},true,'sample');}
+function finalize(result,sample,source){
+  if(result.error){reachTerminalState(result.error,result.ctx||{},'load-status');return;}
+  DATA=result.rows;isSample=sample;VF=computeVF();
+  auditLog({type:AUDIT.DATA_LOAD_SUCCESS,source,rows:DATA.length,isSample:sample,verifiedTotal:fmt(VF.total)});
+  showStatus(`✓ ${DATA.length.toLocaleString()} payment records loaded.`,'ok');
+  buildDashboard(result.cols);
+}
+const C={blue:'#2563b0',teal:'#0f7a58',amber:'#b45309',coral:'#c2410c',purple:'#5b3eb5',pink:'#9d2a52',green:'#2d6b14',red:'#991f1f'};
+const PAL=Object.values(C);
+function mkChart(id,cfg){if(activeCharts[id])activeCharts[id].destroy();const c=document.getElementById(id);if(c)activeCharts[id]=new Chart(c,cfg);}
+function hbar(id,labels,vals,color){mkChart(id,{type:'bar',data:{labels,datasets:[{data:vals,backgroundColor:color,borderRadius:3,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>" "+fmt(c.raw*1e6)}}},scales:{x:{ticks:{callback:v=>"$"+v+"M",maxTicksLimit:5}},y:{ticks:{autoSkip:false,font:{size:11}}}}}});}
+function buildDashboard(cols){
+  document.getElementById('dashboard').style.display='block';
+  const detectedCols=Object.entries(cols).filter(([,v])=>v).map(([k])=>k);
+  const missingCols=Object.entries(cols).filter(([,v])=>!v).map(([k])=>k);
+  const years=VF.years;
+  document.getElementById('dq-bar').innerHTML=`<div class="dq-bar"><span class="dq-ok">✓</span>${DATA.length.toLocaleString()} rows<span class="dq-ok" style="margin-left:8px">✓</span> Columns: ${detectedCols.join(', ')||'auto'}${missingCols.length?` &nbsp;<span class="dq-warn">⚠ missing: ${missingCols.join(', ')}</span>`:''} <span class="dq-ok" style="margin-left:8px">✓</span> Years: ${years.join(', ')||'—'} <span class="dq-ok" style="margin-left:8px">✓</span> Verified total: ${fmt(VF.total)}</div>`;
+  document.getElementById('metrics-row').innerHTML=[{label:'Total payments',val:fmt(VF.total)},{label:'Unique vendors',val:VF.vendorCount},{label:'Agencies',val:VF.agencyCount},{label:'Years',val:years.length?years[0]+'–'+years[years.length-1]:'—'}].map(m=>`<div class="metric"><div class="metric-label">${m.label}</div><div class="metric-val">${m.val}</div></div>`).join('');
+  const byYear=years.map(y=>({year:String(y),amount:DATA.filter(r=>r.fy===y).reduce((s,r)=>s+r.amount,0)}));
+  const y0=byYear[0]?.amount||1,yN=byYear[byYear.length-1]?.amount||1,trendPct=Math.round((yN-y0)/y0*100);
+  const byFund=groupBy('fund'),byAgency=groupBy('agency').slice(0,6),byVendor=groupBy('vendor').slice(0,8);
+  const top5sum=groupBy('vendor').slice(0,5).reduce((s,[,a])=>s+a,0);
+  const vBadge='<div class="verified-badge">✓ computed directly from data — not AI-generated</div>';
+  document.getElementById('insight-grid').innerHTML=`
+    <div class="insight-card"><div class="iq">How did total spending trend?</div><div class="ifinding">Payments <strong>${trendPct>=0?'grew':'fell'} ${Math.abs(trendPct)}%</strong> — from <strong>${fmt(y0)}</strong> to <strong>${fmt(yN)}</strong>.</div><div class="chart-wrap" style="height:170px"><canvas id="c-trend" role="img" aria-label="Spending by year"></canvas></div>${vBadge}</div>
+    <div class="insight-card"><div class="iq">How is spending funded?</div><div class="ifinding"><strong>${VF.topFundPct}%</strong> flows through <strong>${VF.topFund}</strong>.</div><div class="chart-wrap" style="height:170px"><canvas id="c-fund" role="img" aria-label="Fund breakdown"></canvas></div>${vBadge}</div>
+    <div class="insight-card"><div class="iq">Which agencies paid vendors most?</div><div class="ifinding"><strong>${VF.topAgency}</strong> leads with <strong>${fmt(VF.topAgencyAmt)}</strong>.</div><div class="chart-wrap" style="height:${Math.max(190,byAgency.length*40+40)}px"><canvas id="c-agency" role="img" aria-label="Top agencies"></canvas></div>${vBadge}</div>
+    <div class="insight-card"><div class="iq">Who are the biggest vendors?</div><div class="ifinding">Top 5 collected <strong>${fmt(top5sum)}</strong> — <strong>${pct(top5sum,VF.total)}%</strong> of all payments.</div><div class="chart-wrap" style="height:${Math.max(210,byVendor.length*40+40)}px"><canvas id="c-vendor" role="img" aria-label="Top vendors"></canvas></div>${vBadge}</div>`;
+  setTimeout(()=>{
+    mkChart('c-trend',{type:'bar',data:{labels:byYear.map(d=>d.year),datasets:[{data:byYear.map(d=>Math.round(d.amount/1e6)),backgroundColor:C.blue,borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>" "+fmt(c.raw*1e6)}}},scales:{x:{ticks:{autoSkip:false}},y:{ticks:{callback:v=>"$"+v+"M"}}}}});
+    mkChart('c-fund',{type:'doughnut',data:{labels:byFund.map(([f])=>f),datasets:[{data:byFund.map(([,a])=>Math.round(a/1e6)),backgroundColor:PAL,borderWidth:1,borderColor:'transparent'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:10},boxWidth:9}},tooltip:{callbacks:{label:c=>` ${c.label}: ${fmt(c.raw*1e6)}`}}}}});
+    hbar('c-agency',byAgency.map(([a])=>a.length>26?a.slice(0,24)+'…':a),byAgency.map(([,a])=>Math.round(a/1e6)),C.teal);
+    hbar('c-vendor',byVendor.map(([v])=>v.length>26?v.slice(0,24)+'…':v),byVendor.map(([,a])=>Math.round(a/1e6)),C.blue);
+  },50);
+  document.getElementById('footer-note').innerHTML=isSample?`⚠ Sample data — load the actual Vendor-Payments_2021-23.xlsx for real figures. Data load events logged to console (session ${SESSION_ID}).`:`${DATA.length.toLocaleString()} rows loaded · verified total ${fmt(VF.total)} · session ${SESSION_ID} · all load events logged to console.`;
+}
+const dz=document.getElementById('drop-zone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag-over')});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag-over'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f)loadFromFile(f);});
+</script>
+</body>
+</html>
