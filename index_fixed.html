@@ -117,8 +117,8 @@ h1{font-size:26px;font-weight:500;color:#111}
             AI backend endpoint <span>· recommended for real users</span>
           </label>
           <input type="text" class="key-input" id="proxy-url-input"
-            value="/api/ask"
-            placeholder="/api/ask"
+            value="https://wa-budget.vercel.app/api/ask"
+            placeholder="https://wa-budget.vercel.app/api/ask"
             oninput="onKeyInput()" />
           <label class="key-label" for="api-key-input">
             Optional Anthropic API key <span>· local testing only; do not use for public deployment</span>
@@ -483,6 +483,14 @@ function loadSample(){
 function finalize(result,sample,source){
   if(result.error){reachTerminalState(result.error,result.ctx||{},'load-status');return;}
   DATA=result.rows;isSample=sample;VF=computeVF();
+
+  // Expose for browser-console debugging
+  window.DATA = DATA;
+  window.VF = VF;
+  window.buildDataContext = buildDataContext;
+  window.fmt = fmt;
+  window.pct = pct;
+
   auditLog({type:AUDIT.DATA_LOAD_SUCCESS,source,rows:DATA.length,isSample:sample,verifiedTotal:fmt(VF.total)});
   showStatus(`✓ ${DATA.length.toLocaleString()} payment records loaded.`,'ok');
   buildDashboard(result.cols);
@@ -567,21 +575,39 @@ function chipAsk(q){document.getElementById('q-input').value=q;handleAsk();}
 async function callAI(q){
   const proxy=getProxyUrl();
   const key=getApiKey();
+  const verifiedFacts = buildDataContext();
   const payload={
     question:q,
+
+    // Required by the Vercel backend api/ask.js
+    verifiedFacts,
+
+    // Extra fields kept for compatibility with older/custom backends
     model:DEFAULT_MODEL,
     max_tokens:MAX_OUTPUT_TOKENS,
     system:buildSystemPrompt(VF),
     user_prompt:buildUserPrompt(q),
-    verified_context:buildDataContext()
+    verified_context:verifiedFacts
   };
 
   if(proxy){
-    const res=await fetch(proxy,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    if(!res.ok)throw new Error(`Backend ${res.status}: ${await res.text().catch(()=>'')}`);
-    const d=await res.json();
+    const res=await fetch(proxy,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+
+    const textBody = await res.text();
+    let d = {};
+    try { d = textBody ? JSON.parse(textBody) : {}; }
+    catch { d = { raw: textBody }; }
+
+    if(!res.ok){
+      throw new Error(d.error || d.detail || d.raw || `Backend request failed with status ${res.status}`);
+    }
+
     lastUsage=d.usage||null;
-    // Accept either {answer:{...}} from your backend or raw Anthropic Messages shape.
+    // Accept either {answer:"..."} from api/ask.js or raw Anthropic Messages shape.
     if(d.answer)return {raw:typeof d.answer==='string'?d.answer:JSON.stringify(d.answer), usage:d.usage};
     return {raw:d.content?.[0]?.text||d.text||JSON.stringify(d), usage:d.usage};
   }
