@@ -86,10 +86,18 @@ h1{font-size:26px;font-weight:500;color:#111}
     <div class="section-head">Key questions — answered directly from data</div>
     <div class="insight-grid" id="insight-grid"></div>
 
-    <!-- AI Q&A removed from this export.
-         To restore: integrate Anthropic Messages API (claude-sonnet-4-20250514).
-         Inject VERIFIED_FACTS into system prompt. Log all interactions to /api/v1/audit.
-         See README.md for full architecture and audit schema. -->
+    <div class="section-head">Ask the data — AI Q&amp;A</div>
+    <div class="card">
+      <label style="font-size:12px;color:#888;display:block;margin-bottom:5px">API key (optional)</label>
+      <input type="password" id="api-key-input" placeholder="sk-ant-api03-… (leave blank to use Claude sandbox proxy)" style="width:100%;font-size:13px;padding:9px 12px;border:1px solid #ddd;border-radius:9px;background:#f7f7f5;color:#111;outline:none;margin-bottom:4px" oninput="onKeyInput()">
+      <div id="key-status" style="font-size:11px;color:#888;margin-bottom:14px">Using Claude sandbox proxy (claude.ai only)</div>
+      <label style="font-size:12px;color:#888;display:block;margin-bottom:5px">Ask anything</label>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="ask-input" placeholder="e.g. Which vendor grew fastest between 2021 and 2023?" style="flex:1;font-size:13px;padding:9px 12px;border:1px solid #ddd;border-radius:9px;background:#f7f7f5;color:#111;outline:none" onkeydown="if(event.key==='Enter')handleAsk()">
+        <button class="btn btn-info" onclick="handleAsk()">Ask →</button>
+      </div>
+      <div id="ai-status" style="margin-top:10px"></div>
+    </div>
 
     <p class="footer-note" id="footer-note"></p>
   </div>
@@ -98,12 +106,14 @@ h1{font-size:26px;font-weight:500;color:#111}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
+const HARDCODED_API_KEY = ''; // ← paste your sk-ant-api03-... key here for git deployment
 const AUDIT={DATA_LOAD_ATTEMPT:'DATA_LOAD_ATTEMPT',DATA_LOAD_SUCCESS:'DATA_LOAD_SUCCESS',DATA_LOAD_ERROR:'DATA_LOAD_ERROR',TERMINAL_STATE:'TERMINAL_STATE'};
-const T={URL_BLOCKED:'URL_BLOCKED',COLS_UNDETECTED:'COLS_UNDETECTED',NO_VALID_ROWS:'NO_VALID_ROWS'};
+const T={URL_BLOCKED:'URL_BLOCKED',COLS_UNDETECTED:'COLS_UNDETECTED',NO_VALID_ROWS:'NO_VALID_ROWS',AI_UNAVAILABLE:'AI_UNAVAILABLE'};
 const T_CONFIG={
   [T.URL_BLOCKED]:    {icon:'🔒',title:"Can't access that URL",       sub:"Download the file and drag it into the drop zone instead."},
   [T.COLS_UNDETECTED]:{icon:'⚠', title:"Columns not recognized",       sub:""},
   [T.NO_VALID_ROWS]:  {icon:'⚠', title:"No payment data found",        sub:""},
+  [T.AI_UNAVAILABLE]: {icon:'⚠', title:"AI unavailable",               sub:""},
 };
 const SESSION_ID=Math.random().toString(36).slice(2,10);
 function auditLog(ev){const e={ts:new Date().toISOString(),session:SESSION_ID,env:'export-no-ai',...ev};console.log('[WA_BUDGET_AUDIT]',JSON.stringify(e,null,2));}
@@ -113,6 +123,7 @@ function reachTerminalState(state,ctx={},tid='load-status'){
   let sub=cfg.sub;
   if(state===T.COLS_UNDETECTED&&ctx.headers)sub=`Detected: ${ctx.headers.slice(0,8).join(', ')}. Needs a vendor name and payment amount column.`;
   if(state===T.NO_VALID_ROWS)sub=`Parsed ${ctx.totalRows||0} rows but found ${ctx.filtered||0} with valid vendor names and amounts.`;
+  if(state===T.AI_UNAVAILABLE&&ctx.error)sub=ctx.error;
   document.getElementById(tid).innerHTML=`<div class="alert alert-err"><span>${cfg.icon}</span><div class="alert-body"><div class="alert-title">${cfg.title}</div><div class="alert-sub">${sub}</div><div class="terminal-badge">STATE: ${state}</div></div></div>`;
 }
 const SAMPLE=[
@@ -246,6 +257,34 @@ function buildDashboard(cols){
     hbar('c-vendor',byVendor.map(([v])=>v.length>26?v.slice(0,24)+'…':v),byVendor.map(([,a])=>Math.round(a/1e6)),C.blue);
   },50);
   document.getElementById('footer-note').innerHTML=isSample?`⚠ Sample data — load the actual Vendor-Payments_2021-23.xlsx for real figures. Data load events logged to console (session ${SESSION_ID}).`:`${DATA.length.toLocaleString()} rows loaded · verified total ${fmt(VF.total)} · session ${SESSION_ID} · all load events logged to console.`;
+  onKeyInput();
+}
+function getApiKey(){return document.getElementById('api-key-input')?.value.trim()||HARDCODED_API_KEY||'';}
+function onKeyInput(){
+  const v=document.getElementById('api-key-input')?.value.trim()||'';
+  const el=document.getElementById('key-status');if(!el)return;
+  if(!v)el.textContent='Using Claude sandbox proxy (claude.ai only)';
+  else if(v.startsWith('sk-ant-'))el.textContent='✓ API key set — memory only, never saved';
+  else el.textContent='⚠ Key format looks off — Anthropic keys start with sk-ant-';
+}
+async function handleAsk(){
+  const q=document.getElementById('ask-input')?.value.trim();if(!q)return;
+  document.getElementById('ai-status').innerHTML='<div class="alert alert-info"><span>⌛</span><div class="alert-body">Thinking…</div></div>';
+  const headers={'Content-Type':'application/json'};
+  const key=getApiKey();
+  if(key)headers['x-api-key']=key;
+  const VERIFIED_FACTS=`Total payments: ${fmt(VF.total)}. Top vendor: ${VF.topVendor} (${fmt(VF.topVendorAmt)}). Top agency: ${VF.topAgency} (${fmt(VF.topAgencyAmt)}). Top fund: ${VF.topFund} (${VF.topFundPct}%). Unique vendors: ${VF.vendorCount}. Agencies: ${VF.agencyCount}. Fiscal years: ${VF.years.join(', ')}.`;
+  auditLog({type:'AI_QUERY',question:q,keySource:key?'user_provided':'sandbox_proxy'});
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers,body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:512,system:`You are a concise data analyst assistant. Answer questions about Washington State vendor payments using only these verified facts computed directly from the loaded data: ${VERIFIED_FACTS}`,messages:[{role:'user',content:q}]})});
+    if(res.status===401){reachTerminalState(T.AI_UNAVAILABLE,{error:'Invalid API key — check your key and try again'},'ai-status');return;}
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    const answer=data.content?.[0]?.text||'No response received.';
+    document.getElementById('ai-status').innerHTML=`<div class="alert alert-ok"><span>✓</span><div class="alert-body">${answer.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</div></div>`;
+  }catch(e){
+    document.getElementById('ai-status').innerHTML=`<div class="alert alert-err"><span>⚠</span><div class="alert-body">Error: ${e.message}</div></div>`;
+  }
 }
 const dz=document.getElementById('drop-zone');
 dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag-over')});
