@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>WA Budget Lens — Large File Safe</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;color:#111;background:#fafaf8;min-height:100vh;padding:2rem 1rem}
+.wrap{max-width:760px;margin:0 auto}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#999;margin-bottom:6px}
+h1{font-size:26px;font-weight:500;color:#111}
+.sub{font-size:15px;color:#666;margin-top:6px;line-height:1.5}
+.card{border:1px solid #e0e0d8;border-radius:14px;padding:20px;background:#fff;margin:14px 0}
+.btn{padding:8px 16px;background:transparent;border:1px solid #ddd;border-radius:9px;cursor:pointer;font-size:13px;color:#333;font-family:inherit;white-space:nowrap}
+.btn:hover:not(:disabled){background:#f0f0ec}.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-info{border-color:#2563b0;color:#1e5fa0}
+.drop-zone{border:1px dashed #ccc;border-radius:9px;padding:18px;text-align:center;cursor:pointer;font-size:13px;color:#888;margin-top:12px}
+.drop-zone:hover,.drop-zone.drag-over{border-color:#555;color:#333}
+.alert{font-size:13px;padding:10px 12px;border-radius:8px;margin:8px 0;display:flex;align-items:flex-start;gap:8px}
+.alert-ok{background:#edfaf4;color:#1a7a4a;border:1px solid #b6e8cd}
+.alert-err{background:#fff0f0;color:#c0392b;border:1px solid #f5c6c6}
+.alert-info{background:#f0f4ff;color:#2c5aa0;border:1px solid #c5d5f5}
+.alert-warn{background:#fffbeb;color:#92400e;border:1px solid #fcd34d}
+.alert-body{flex:1}.alert-title{font-weight:500;margin-bottom:2px}.alert-sub{font-size:12px;opacity:.85;line-height:1.5}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:1rem 0}
+@media(max-width:600px){.metrics{grid-template-columns:repeat(2,1fr)}}
+.metric{background:#f5f5f2;border-radius:9px;padding:13px 15px}
+.metric-label{font-size:11px;color:#888;margin-bottom:4px}.metric-val{font-size:20px;font-weight:500;color:#111}
+.section-head{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#bbb;margin:2rem 0 1rem;display:flex;align-items:center;gap:8px}
+.section-head::after{content:"";flex:1;border-top:1px solid #eee}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.mini{border:1px solid #e8e8e4;border-radius:12px;padding:14px;background:#fff}
+.mini h3{font-size:12px;color:#777;margin-bottom:8px}.mini ul{list-style:none;display:grid;gap:6px;font-size:13px;color:#222}
+.key-input{width:100%;font-size:13px;padding:9px 12px;border:1px solid #ddd;border-radius:9px;background:#f7f7f5;color:#111;outline:none}
+.q-row{display:flex;gap:8px;margin-top:10px}.q-row input{flex:1;font-size:14px;padding:9px 12px;border:1px solid #ddd;border-radius:9px;background:#f7f7f5}
+.result-box{border:1px solid #e8e8e4;border-radius:12px;padding:18px;margin-top:12px;background:#fff}
+.narrative{font-size:14px;line-height:1.75;color:#222}.footer-note{font-size:11px;color:#aaa;line-height:1.6;margin-top:2rem;padding-top:1.5rem;border-top:1px solid #eee}
+code{background:#f7f7f5;border:1px solid #eee;border-radius:5px;padding:1px 4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Washington State · Fiscal Data</div>
+  <h1>Budget Lens</h1>
+  <p class="sub">Large-file safe version: load a small precomputed <code>summary.json</code>, then let users ask questions against verified facts.</p>
+
+  <div class="card">
+    <h3 style="font-size:15px;font-weight:500;margin-bottom:8px">Load optimized data</h3>
+    <button class="btn btn-info" onclick="loadDefaultSummary()">Load summary.json →</button>
+    <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+      📂 Drop <strong>summary.json</strong> here, or click to browse
+      <input type="file" id="file-input" accept=".json" style="display:none" onchange="loadSummaryFile(this.files[0])">
+    </div>
+    <div id="load-status"></div>
+    <div class="alert alert-warn">
+      <span>⚠</span>
+      <div class="alert-body">
+        <div class="alert-title">Do not upload the full Excel in the browser for large files</div>
+        <div class="alert-sub">Run <code>python tools/precompute_summary.py Vendor-Payments.xlsx summary.json</code> once, then host/load the generated <code>summary.json</code>. This prevents the blank-page crash.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="dashboard" style="display:none">
+    <div class="metrics" id="metrics-row"></div>
+
+    <div class="section-head">Verified full-dataset facts</div>
+    <div class="grid">
+      <div class="mini"><h3>Top vendors</h3><ul id="top-vendors"></ul></div>
+      <div class="mini"><h3>Top agencies</h3><ul id="top-agencies"></ul></div>
+      <div class="mini"><h3>Fund breakdown</h3><ul id="fund-breakdown"></ul></div>
+      <div class="mini"><h3>Fastest vendor growth</h3><ul id="vendor-growth"></ul></div>
+    </div>
+
+    <div class="section-head">Ask your own question</div>
+    <div class="card">
+      <label style="font-size:12px;color:#666;display:block;margin-bottom:5px">AI backend endpoint</label>
+      <input class="key-input" id="proxy-url-input" value="https://wa-budget.vercel.app/api/ask" />
+      <div class="q-row">
+        <input type="text" id="q-input" placeholder="e.g. Which vendors grew the fastest?" />
+        <button class="btn btn-info" id="ask-btn" onclick="handleAsk()">Ask ↗</button>
+      </div>
+      <div id="ai-status"></div>
+      <div id="ai-result"></div>
+    </div>
+    <p class="footer-note" id="footer-note"></p>
+  </div>
+</div>
+
+<script>
+let AI_CONTEXT=null, VERIFIED_FACTS=null;
+const MAX_QUESTION_CHARS=500, MAX_QUESTIONS_PER_SESSION=20;
+let askCount=0;
+
+function fmt(n){
+  n=Number(n||0);
+  if(n>=1e9)return '$'+(n/1e9).toFixed(1)+'B';
+  if(n>=1e6)return '$'+Math.round(n/1e6)+'M';
+  return '$'+Math.round(n).toLocaleString();
+}
+function escapeHtml(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+function status(msg,type='info'){document.getElementById('load-status').innerHTML=`<div class="alert alert-${type}"><span>${type==='ok'?'✓':type==='err'?'⚠':'⌛'}</span><div class="alert-body">${msg}</div></div>`;}
+
+async function loadDefaultSummary(){
+  try{
+    status('Loading summary.json…','info');
+    const res=await fetch('./summary.json');
+    if(!res.ok)throw new Error('Could not find summary.json next to index.html');
+    loadSummary(await res.json());
+  }catch(e){status(escapeHtml(e.message),'err');}
+}
+
+function loadSummaryFile(file){
+  if(!file)return;
+  if(!file.name.toLowerCase().endsWith('.json')){
+    status('Please upload the generated summary.json file, not the full Excel file.','err');return;
+  }
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{loadSummary(JSON.parse(e.target.result));}
+    catch(err){status('Could not parse JSON summary: '+escapeHtml(err.message),'err');}
+  };
+  reader.readAsText(file);
+}
+
+function loadSummary(summary){
+  AI_CONTEXT = summary.AI_CONTEXT || summary;
+  VERIFIED_FACTS = AI_CONTEXT.VERIFIED_FACTS || summary.VERIFIED_FACTS;
+  if(!VERIFIED_FACTS)throw new Error('summary.json missing VERIFIED_FACTS');
+  window.AI_CONTEXT=AI_CONTEXT; window.VERIFIED_FACTS=VERIFIED_FACTS;
+
+  document.getElementById('dashboard').style.display='block';
+  status('✓ Optimized summary loaded. AI will use VERIFIED_FACTS as ground truth.','ok');
+  buildDashboard();
+}
+
+function li(items, mapFn){
+  return (items||[]).slice(0,8).map(mapFn).join('');
+}
+function buildDashboard(){
+  const f=VERIFIED_FACTS;
+  document.getElementById('metrics-row').innerHTML=[
+    ['Total payments',f.total_payments_formatted||fmt(f.total_payments)],
+    ['Rows summarized',(f.row_count||0).toLocaleString()],
+    ['Vendors',(f.vendor_count||0).toLocaleString()],
+    ['Years',f.year_range || (f.years||[]).join('–')]
+  ].map(([label,val])=>`<div class="metric"><div class="metric-label">${label}</div><div class="metric-val">${escapeHtml(val)}</div></div>`).join('');
+
+  document.getElementById('top-vendors').innerHTML=li(f.top_vendors, x=>`<li><strong>${escapeHtml(x.name)}</strong> — ${escapeHtml(x.amount_formatted||fmt(x.amount))}</li>`);
+  document.getElementById('top-agencies').innerHTML=li(f.top_agencies, x=>`<li><strong>${escapeHtml(x.name)}</strong> — ${escapeHtml(x.amount_formatted||fmt(x.amount))}</li>`);
+  document.getElementById('fund-breakdown').innerHTML=li(f.fund_breakdown, x=>`<li><strong>${escapeHtml(x.name)}</strong> — ${escapeHtml(x.amount_formatted||fmt(x.amount))} (${x.share_percent||0}%)</li>`);
+  document.getElementById('vendor-growth').innerHTML=li(f.fastest_vendor_growth, x=>`<li><strong>${escapeHtml(x.vendor)}</strong> — ${escapeHtml(x.absolute_change_formatted||fmt(Math.abs(x.absolute_change||0)))} ${escapeHtml(x.direction||'increase')}</li>`);
+  document.getElementById('footer-note').textContent=`Grounded in precomputed full-dataset facts · sample rows included: ${(AI_CONTEXT.sample_rows||[]).length}`;
+}
+
+async function handleAsk(){
+  const q=document.getElementById('q-input').value.trim();
+  const endpoint=document.getElementById('proxy-url-input').value.trim();
+  if(!AI_CONTEXT){document.getElementById('ai-status').innerHTML='<div class="alert alert-err"><span>⚠</span><div class="alert-body">Load summary.json first.</div></div>';return;}
+  if(!q)return;
+  if(q.length>MAX_QUESTION_CHARS){document.getElementById('ai-status').innerHTML='<div class="alert alert-err"><span>⚠</span><div class="alert-body">Question is too long.</div></div>';return;}
+  if(askCount>=MAX_QUESTIONS_PER_SESSION){document.getElementById('ai-status').innerHTML='<div class="alert alert-err"><span>⚠</span><div class="alert-body">Session question limit reached.</div></div>';return;}
+
+  askCount++;
+  document.getElementById('ask-btn').disabled=true;
+  document.getElementById('ai-status').innerHTML='<div class="alert alert-info"><span>⌛</span><div class="alert-body">Asking AI using precomputed verified facts…</div></div>';
+  document.getElementById('ai-result').innerHTML='';
+
+  try{
+    const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,verifiedFacts:AI_CONTEXT})});
+    const body=await res.text();
+    let d={}; try{d=body?JSON.parse(body):{};}catch{d={answer:body};}
+    if(!res.ok)throw new Error(d.error||d.detail||body||`Backend ${res.status}`);
+    let answer=d.answer||'';
+    let parsed=null;
+    try{parsed=JSON.parse(String(answer).replace(/```json|```/g,'').trim());}catch{}
+    const narrative=parsed?.narrative || answer;
+    const highlights=parsed?.highlights || [];
+    document.getElementById('ai-status').innerHTML='<div class="alert alert-ok"><span>✓</span><div class="alert-body">Answer generated from verified facts.</div></div>';
+    document.getElementById('ai-result').innerHTML=`<div class="result-box">
+      ${highlights.length?`<div style="display:grid;gap:8px;margin-bottom:12px">${highlights.slice(0,3).map(h=>`<div class="metric"><div class="metric-label">${escapeHtml(h.label)}</div><div class="metric-val">${escapeHtml(h.value)}</div><div style="font-size:11px;color:#999">${escapeHtml(h.context||'')}</div></div>`).join('')}</div>`:''}
+      <p class="narrative">${escapeHtml(narrative)}</p>
+      <div style="font-size:11px;color:#aaa;margin-top:10px">Model usage: ${d.usage?`${d.usage.input_tokens||0} input · ${d.usage.output_tokens||0} output tokens`:'not returned'}</div>
+    </div>`;
+  }catch(e){
+    document.getElementById('ai-status').innerHTML=`<div class="alert alert-err"><span>⚠</span><div class="alert-body"><div class="alert-title">AI request failed</div><div class="alert-sub">${escapeHtml(e.message)}</div></div></div>`;
+  }finally{
+    document.getElementById('ask-btn').disabled=false;
+  }
+}
+
+document.getElementById('q-input').addEventListener('keydown',e=>{if(e.key==='Enter')handleAsk();});
+const dz=document.getElementById('drop-zone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag-over')});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag-over'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f)loadSummaryFile(f);});
+</script>
+</body>
+</html>
