@@ -649,7 +649,13 @@ async function handleAsk(){
     lastUsage=d.usage||null;
     let parsed; try{parsed=JSON.parse(String(raw).replace(/```json|```/g,'').trim());}catch{parsed={narrative:String(raw||'No response.'),highlights:[],chartType:null};}
     renderResult(parsed);
-  }catch(e){showAIStatus('AI request failed',e.message,'err');auditLog({type:'AI_QUERY_ERROR',question:q,error:e.message});}
+  }catch(e){
+    const detail=e instanceof TypeError && /fetch/i.test(e.message)
+      ? `Could not reach ${AI_BACKEND_ENDPOINT}. Check that the backend is deployed and allows this local origin (${location.origin}).`
+      : e.message;
+    showAIStatus('AI request failed',detail,'err');
+    auditLog({type:'AI_QUERY_ERROR',question:q,error:detail});
+  }
   finally{
     document.getElementById('ask-btn').disabled=false;
     document.querySelectorAll('.chip').forEach(c=>c.disabled=false);

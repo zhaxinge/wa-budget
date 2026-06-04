@@ -3,17 +3,19 @@ import * as XLSX from "xlsx";
 export const config = { api: { bodyParser: false } };
 
 const ALLOWED_ORIGINS = [
-  "https://zhaxinge.github.io",
-  "http://localhost:3000",
-  "http://localhost:5173",
-  "http://localhost:5500",
-  "http://127.0.0.1:5500"
+  "https://zhaxinge.github.io"
 ];
+
+function isAllowedOrigin(origin) {
+  if (ALLOWED_ORIGINS.includes(origin)) return true;
+  return /^http:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?$/.test(origin || "");
+}
 
 function setCors(req, res) {
   const origin = req.headers.origin;
-  if (ALLOWED_ORIGINS.includes(origin)) res.setHeader("Access-Control-Allow-Origin", origin);
+  if (isAllowedOrigin(origin)) res.setHeader("Access-Control-Allow-Origin", origin);
   else res.setHeader("Access-Control-Allow-Origin", "https://zhaxinge.github.io");
+  res.setHeader("Vary", "Origin");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, X-File-Name");
 }
