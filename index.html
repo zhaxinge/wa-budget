@@ -628,6 +628,48 @@ function buildAIContext(){
     sample_rows:DATA.slice(0,120)
   };
 }
+function extractJsonObject(text){
+  const start=text.indexOf('{');
+  if(start===-1)return null;
+  let depth=0,inString=false,escaped=false;
+  for(let i=start;i<text.length;i++){
+    const ch=text[i];
+    if(inString){
+      if(escaped)escaped=false;
+      else if(ch==='\\')escaped=true;
+      else if(ch==='"')inString=false;
+      continue;
+    }
+    if(ch==='"'){inString=true;continue;}
+    if(ch==='{')depth++;
+    else if(ch==='}'){depth--;if(depth===0)return text.slice(start,i+1);}
+  }
+  return null;
+}
+function parseAIResponse(text){
+  const raw=String(text||'').trim();
+  if(!raw)return{narrative:'No response.',highlights:[],chartType:null,chartTitle:null,chartData:[]};
+  const fenceMatch=raw.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  const jsonText=fenceMatch?fenceMatch[1].trim():extractJsonObject(raw);
+  const tail=fenceMatch?raw.slice(fenceMatch.index+fenceMatch[0].length).trim():'';
+  if(jsonText){
+    try{
+      const parsed=JSON.parse(jsonText);
+      if(tail){
+        const extra=tail.replace(/\*\*([^*]+)\*\*/g,'$1').trim();
+        if(extra)parsed.narrative=[parsed.narrative,extra].filter(Boolean).join('\n\n');
+      }
+      return parsed;
+    }catch{}
+  }
+  return{narrative:raw,highlights:[],chartType:null,chartTitle:null,chartData:[]};
+}
+function normalizeChartData(chartData){
+  if(!chartData?.length)return chartData;
+  const max=Math.max(...chartData.map(d=>Number(d.value)||0));
+  if(max>=1e6)return chartData.map(d=>({...d,value:(Number(d.value)||0)/1e6}));
+  return chartData;
+}
 function chipAsk(q){document.getElementById('q-input').value=q;handleAsk();}
 async function handleAsk(){
   const q=document.getElementById('q-input').value.trim();
@@ -647,7 +689,7 @@ async function handleAsk(){
     if(!res.ok)throw new Error(d.error||d.detail||d.raw||`Backend ${res.status}`);
     const raw=d.answer||d.content?.[0]?.text||d.text||'';
     lastUsage=d.usage||null;
-    let parsed; try{parsed=JSON.parse(String(raw).replace(/```json|```/g,'').trim());}catch{parsed={narrative:String(raw||'No response.'),highlights:[],chartType:null};}
+    const parsed=(d.narrative!=null||d.highlights||d.chartType!=null)?d:parseAIResponse(raw);
     renderResult(parsed);
   }catch(e){
     const detail=e instanceof TypeError && /fetch/i.test(e.message)
@@ -666,13 +708,14 @@ function renderResult(r){
   document.getElementById('ai-status').innerHTML='';
   const hls=(r.highlights||[]).slice(0,3);
   const hlHtml=hls.length?`<div class="hls" style="grid-template-columns:repeat(${hls.length},minmax(0,1fr))">${hls.map(h=>`<div class="hl"><div class="hl-label">${esc(h.label)}</div><div class="hl-val">${esc(h.value)}</div><div class="hl-ctx">${esc(h.context||'')}</div></div>`).join('')}</div>`:'';
-  const hasChart=r.chartType&&r.chartData?.length;
+  const chartData=normalizeChartData(r.chartData);
+  const hasChart=r.chartType&&chartData?.length;
   const cid='c-ai-'+Date.now();
-  const chartH=r.chartType==='bar'?Math.max(180,(r.chartData?.length||1)*40+40):220;
+  const chartH=r.chartType==='bar'?Math.max(180,(chartData?.length||1)*40+40):220;
   const chartHtml=hasChart?`<p style="font-size:12px;font-weight:500;color:var(--color-text-secondary);margin:12px 0 6px">${esc(r.chartTitle||'')}</p><div class="chart-wrap" style="height:${chartH}px"><canvas id="${cid}"></canvas></div>`:'';
   document.getElementById('ai-result').innerHTML=`<div class="result-box">${hlHtml}<p class="narrative">${esc(r.narrative)}</p>${chartHtml}<div class="result-footer"><span>🛡 logged · session ${SESSION_ID}</span><span style="font-size:10px">${lastUsage?`${lastUsage.input_tokens||0} in · ${lastUsage.output_tokens||0} out`:fmt(STATE.tTotal)+' transport verified'}</span></div></div>`;
   if(hasChart){
-    const labels=r.chartData.map(d=>d.name),vals=r.chartData.map(d=>d.value);
+    const labels=chartData.map(d=>d.name),vals=chartData.map(d=>d.value);
     const ttfn=c=>" "+fmt((c.parsed??c.raw)*1e6);
     if(r.chartType==='line') aiChart=new Chart(document.getElementById(cid),{type:'line',data:{labels,datasets:[{data:vals,borderColor:C.blue,backgroundColor:'rgba(55,138,221,.08)',borderWidth:2,pointRadius:4,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ttfn}}},scales:{x:{ticks:{autoSkip:false}},y:{ticks:{callback:v=>"$"+v+"M"}}}}});
     else if(r.chartType==='pie') aiChart=new Chart(document.getElementById(cid),{type:'doughnut',data:{labels,datasets:[{data:vals,backgroundColor:PAL,borderWidth:1,borderColor:'transparent'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:10},boxWidth:9}},tooltip:{callbacks:{label:c=>` ${c.label}: ${fmt(c.raw*1e6)}`}}}}});
