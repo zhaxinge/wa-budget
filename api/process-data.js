@@ -1,24 +1,7 @@
 import * as XLSX from "xlsx";
+import { setCors } from "./cors.js";
 
 export const config = { api: { bodyParser: false } };
-
-const ALLOWED_ORIGINS = [
-  "https://zhaxinge.github.io"
-];
-
-function isAllowedOrigin(origin) {
-  if (ALLOWED_ORIGINS.includes(origin)) return true;
-  return /^http:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?$/.test(origin || "");
-}
-
-function setCors(req, res) {
-  const origin = req.headers.origin;
-  if (isAllowedOrigin(origin)) res.setHeader("Access-Control-Allow-Origin", origin);
-  else res.setHeader("Access-Control-Allow-Origin", "https://zhaxinge.github.io");
-  res.setHeader("Vary", "Origin");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, X-File-Name");
-}
 
 async function readRawBody(req) {
   const chunks = [];
@@ -233,7 +216,7 @@ function parseFile(buffer, filename) {
 }
 
 export default async function handler(req, res) {
-  setCors(req, res);
+  setCors(req, res, "Content-Type, X-File-Name");
   if (req.method === "OPTIONS") return res.status(204).end();
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed. Use POST." });
 

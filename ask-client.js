@@ -10,7 +10,11 @@ Then set your endpoint below after Vercel deploys your backend.
 */
 
 window.WABudgetAskConfig = {
-  endpoint: "https://wa-budget.vercel.app/api/ask",
+  endpoint: (() => {
+    const host = location.hostname;
+    if (host.endsWith(".vercel.app")) return "/api/ask";
+    return "https://wa-budget.vercel.app/api/ask";
+  })(),
   maxQuestionsPerSession: 20,
   maxQuestionLength: 500
 };

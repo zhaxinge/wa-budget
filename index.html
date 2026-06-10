@@ -123,7 +123,7 @@ h1{font-size:24px;font-weight:500}
       <input type="file" id="file-input" accept=".xlsx,.xls,.csv" style="display:none" onchange="loadFromFile(this.files[0])">
     </div>
     <div class="sample-row">
-      <span>No file? Load the precomputed WA vendor-payment demo</span>
+      <span>No file? Load the precomputed WA vendor payments (all rows)</span>
       <button class="btn" onclick="loadSample()">Use sample data →</button>
     </div>
     <div id="load-status"></div>
@@ -165,7 +165,11 @@ h1{font-size:24px;font-weight:500}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-const AI_BACKEND_ENDPOINT = 'https://wa-budget.vercel.app/api/ask';
+const AI_BACKEND_ENDPOINT = (() => {
+  const host = location.hostname;
+  if (host.endsWith('.vercel.app')) return '/api/ask';
+  return 'https://wa-budget.vercel.app/api/ask';
+})();
 const MAX_QUESTIONS_PER_SESSION = 20;
 const MAX_QUESTION_CHARS = 500;
 let askCount = 0, lastUsage = null;
@@ -346,9 +350,9 @@ function recompute(){
     SUMMARY_CONTEXT?.transportation ||
     null;
 
-  let tData = DATA.filter(r=>r.category==='Transportation'||/transport|wsdot|\bdot\b|highway|bridge|road|transit|ferry/i.test((r.agency+' '+r.vendor+' '+r.fund).toLowerCase()));
+  let tData = DATA.filter(r=>r.is_transportation||r.category==='Transportation'||/transport|wsdot|\bdot\b|highway|bridge|road|transit|ferry/i.test((r.agency+' '+r.vendor+' '+r.fund).toLowerCase()));
 
-  if(transportFacts){
+  if(!tData.length&&transportFacts){
     const synthetic = makeSyntheticTransportationRows(transportFacts);
     if(synthetic.length)tData = synthetic;
   }
@@ -459,25 +463,50 @@ function loadFromFile(file){
   };
   reader.readAsArrayBuffer(file);
 }
+function mapPrecomputedRow(r){
+  return {
+    vendor:r.vendor,
+    agency:r.agency,
+    fund:r.fund,
+    fy:r.fy,
+    amount:r.amount,
+    category:r.category||'',
+    source_sheet:r.source_sheet||'',
+    is_transportation:!!r.is_transportation
+  };
+}
 async function loadSample(){
-  showStatus('Loading precomputed sample data…','info');
+  showStatus('Loading precomputed summary…','info');
   try{
-    const res=await fetch('./summary.json',{cache:'no-store'});
-    if(res.ok){
-      const summary=await res.json();
-      SUMMARY_CONTEXT=summary.AI_CONTEXT||summary;
-      VERIFIED_FACTS=SUMMARY_CONTEXT.VERIFIED_FACTS||summary.VERIFIED_FACTS||null;
-      DATA=(SUMMARY_CONTEXT.sample_rows||[]).map(r=>({vendor:r.vendor,agency:r.agency,fund:r.fund,fy:r.fy,amount:r.amount,category:r.category||''}));
-      if(DATA.length){
-        finalizeRows(DATA,'summary.json',true);
+    const summaryRes=await fetch('./summary.json',{cache:'no-store'});
+    if(!summaryRes.ok)throw new Error('summary.json unavailable');
+    const summary=await summaryRes.json();
+    SUMMARY_CONTEXT=summary.AI_CONTEXT||summary;
+    VERIFIED_FACTS=SUMMARY_CONTEXT.VERIFIED_FACTS||summary.VERIFIED_FACTS||null;
+
+    const rowsFile=SUMMARY_CONTEXT.rows_file||'vendor-payments.json';
+    showStatus(`Loading all payment records from ${rowsFile}…`,'info');
+    const rowsRes=await fetch('./'+rowsFile,{cache:'no-store'});
+    if(rowsRes.ok){
+      const payload=await rowsRes.json();
+      const rows=Array.isArray(payload)?payload:(payload.rows||[]);
+      if(rows.length){
+        finalizeRows(rows.map(mapPrecomputedRow),rowsFile,true);
         return;
       }
     }
-    throw new Error('summary.json unavailable; using embedded representative sample');
+
+    const fallback=SUMMARY_CONTEXT.sample_rows||[];
+    if(fallback.length){
+      finalizeRows(fallback.map(mapPrecomputedRow),'summary.json (sample rows only)',true);
+      showStatus('Loaded summary sample rows only. Regenerate vendor-payments.json for the full dataset.','warn');
+      return;
+    }
+    throw new Error('No precomputed rows found');
   }catch(e){
     SUMMARY_CONTEXT=null; VERIFIED_FACTS=null;
     finalizeRows([...SAMPLE],'embedded sample',true);
-    showStatus('✓ Embedded representative sample loaded. Add summary.json next to index.html for the full precomputed demo.','ok');
+    showStatus('Embedded representative sample loaded. Add summary.json and vendor-payments.json for the full precomputed demo.','ok');
   }
 }
 function finalizeRows(rows,source,isSample=false){
@@ -545,9 +574,19 @@ function setLens(lens){
 
 function buildOverviewDash(lens){
   const {years,total}=STATE;
-  const byYear=years.map(y=>({year:String(y),amount:DATA.filter(r=>r.fy===y).reduce((s,r)=>s+r.amount,0)}));
+  const byYear=(VERIFIED_FACTS?.totals_by_year||[]).length
+    ? VERIFIED_FACTS.totals_by_year.map(d=>({year:String(d.year),amount:Number(d.amount||0)}))
+    : years.map(y=>({year:String(y),amount:DATA.filter(r=>r.fy===y).reduce((s,r)=>s+r.amount,0)}));
   const y0=byYear[0]?.amount||1,yN=byYear[byYear.length-1]?.amount||1,trendPct=Math.round((yN-y0)/y0*100);
-  const byFund=groupBy(DATA,'fund'),byAgency=groupBy(DATA,'agency').slice(0,5),byV=groupBy(DATA,'vendor').slice(0,6);
+  const byFund=(VERIFIED_FACTS?.fund_breakdown||[]).length
+    ? VERIFIED_FACTS.fund_breakdown.map(x=>[x.name,Number(x.amount||0)])
+    : groupBy(DATA,'fund');
+  const byAgency=(VERIFIED_FACTS?.top_agencies||[]).length
+    ? VERIFIED_FACTS.top_agencies.slice(0,5).map(x=>[x.name,Number(x.amount||0)])
+    : groupBy(DATA,'agency').slice(0,5);
+  const byV=(VERIFIED_FACTS?.top_vendors||[]).length
+    ? VERIFIED_FACTS.top_vendors.slice(0,6).map(x=>[x.name,Number(x.amount||0)])
+    : groupBy(DATA,'vendor').slice(0,6);
   const topAgency=byAgency[0]||['—',0],topFund=byFund[0]||['—',0];
   const vb=`<div class="vbadge">✓ computed directly from data</div>`;
   document.getElementById('insight-grid').innerHTML=`
@@ -604,7 +643,15 @@ function buildAIContext(){
   const transportByYear=tByYear.map(d=>({year:d.year,amount:d.amount,amount_formatted:fmt(d.amount),share_percent:pct(d.amount,tTotal)}));
   const transportFundBreakdown=(tByFund||groupBy(STATE.tData,'fund')).map(([name,amount])=>({name,amount,amount_formatted:fmt(amount),share_percent:pct(amount,tTotal)}));
 
-  return SUMMARY_CONTEXT || {
+  if(SUMMARY_CONTEXT){
+    return {
+      ...SUMMARY_CONTEXT,
+      sample_rows_limit:120,
+      sample_rows:DATA.slice(0,120)
+    };
+  }
+
+  return {
     instruction:'Use VERIFIED_FACTS as authoritative ground truth. Use sample_rows only as secondary context.',
     VERIFIED_FACTS:{
       rule:'AUTHORITATIVE_GROUND_TRUTH',
@@ -693,7 +740,7 @@ async function handleAsk(){
     renderResult(parsed);
   }catch(e){
     const detail=e instanceof TypeError && /fetch/i.test(e.message)
-      ? `Could not reach ${AI_BACKEND_ENDPOINT}. Check that the backend is deployed and allows this local origin (${location.origin}).`
+      ? `Could not reach ${AI_BACKEND_ENDPOINT}. If this is a Vercel preview, redeploy so /api/ask is available on the same origin. Otherwise check CORS and that ANTHROPIC_API_KEY is set (${location.origin}).`
       : e.message;
     showAIStatus('AI request failed',detail,'err');
     auditLog({type:'AI_QUERY_ERROR',question:q,error:detail});
@@ -727,9 +774,10 @@ dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag-ove
 dz.addEventListener('dragleave',()=>dz.classList.remove('drag-over'));
 dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f)loadFromFile(f);});
 
-// Init with embedded sample so the tool is immediately usable
-finalizeRows([...SAMPLE],'embedded sample',true);
-document.getElementById('footer-note').innerHTML=`Embedded sample loaded · session ${SESSION_ID} · AI endpoint: ${AI_BACKEND_ENDPOINT}`;
+// Init: load full precomputed dataset when available, else embedded sample
+loadSample().finally(()=>{
+  document.getElementById('footer-note').innerHTML=`Session ${SESSION_ID} · AI endpoint: ${AI_BACKEND_ENDPOINT}`;
+});
 </script>
 </body>
 </html>

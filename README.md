@@ -57,8 +57,10 @@ Serve the repository with any local static server, then open `index.html`. The a
 To regenerate the summary:
 
 ```powershell
-python tools/precompute_summary.py Vendor-Payments_2021-23.xlsx summary.json
+py -3.11 tools/precompute_summary.py Vendor-Payments_2021-23.xlsx summary.json
 ```
+
+This writes both `summary.json` (verified facts for KPIs and AI) and `vendor-payments.json` (~193 MB, all 934k+ rows for the browser demo). The rows file is gitignored; generate it locally after cloning.
 
 For AI Q&A, deploy `api/ask.js` as a serverless endpoint and set the provider API key and model name in the server environment. The browser calls the backend endpoint; it does not receive the provider key.
 
@@ -68,6 +70,7 @@ For AI Q&A, deploy `api/ask.js` as a serverless endpoint and set the provider AP
 wa-budget/
 |-- index.html
 |-- summary.json
+|-- vendor-payments.json
 |-- package.json
 |-- api/
 |   |-- ask.js

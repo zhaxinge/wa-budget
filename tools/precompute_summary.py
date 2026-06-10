@@ -253,8 +253,6 @@ def build_summary(data, input_path, sheet_reports):
         }
     }
 
-    sample_rows = data.head(200).drop(columns=["is_transportation"], errors="ignore").to_dict(orient="records")
-
     return {
         "AI_CONTEXT": {
             "instruction": "Use VERIFIED_FACTS as authoritative ground truth. Use summarized_context and sample_rows only as secondary context. Never recompute full-dataset totals from sample_rows.",
@@ -266,10 +264,21 @@ def build_summary(data, input_path, sheet_reports):
                 "totals_by_year": verified["totals_by_year"],
                 "transportation": verified["transportation"]
             },
-            "sample_rows_limit": 200,
-            "sample_rows": sample_rows
+            "rows_file": "vendor-payments.json",
+            "sample_rows_limit": 120,
+            "sample_rows": []
         }
     }
+
+def export_all_rows(data, input_path, output_path):
+    cols = ["vendor", "agency", "fund", "fy", "amount", "category", "source_sheet", "is_transportation"]
+    rows = data[cols].to_dict(orient="records")
+    payload = {
+        "source_file": input_path.name,
+        "row_count": len(rows),
+        "rows": rows
+    }
+    output_path.write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")
 
 def main():
     parser = argparse.ArgumentParser()
@@ -295,9 +304,13 @@ def main():
     summary = build_summary(data, input_path, reports)
     output_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
 
+    rows_path = output_path.parent / "vendor-payments.json"
+    export_all_rows(data, input_path, rows_path)
+
     vf = summary["AI_CONTEXT"]["VERIFIED_FACTS"]
     t = vf["transportation"]
     print(f"Wrote {output_path}")
+    print(f"Wrote {rows_path} ({vf['row_count']:,} rows)")
     print(f"Included sheets: {vf['included_sheet_count']} / {len(reports)}")
     for r in reports:
         print(f"  - {r['sheet']}: {r.get('valid_rows',0):,} valid rows, {r.get('transport_rows',0):,} transport rows")
