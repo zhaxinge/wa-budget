@@ -54,7 +54,7 @@ The backend prompt explicitly treats `VERIFIED_FACTS` as authoritative and preve
 
 Serve the repository with any local static server, then open `index.html`. The app loads the precomputed `summary.json` demo automatically and can also accept Excel or CSV files.
 
-To regenerate the summary:
+On **Vercel** ([wa-budget.vercel.app](https://wa-budget.vercel.app/)), only `summary.json` is deployed (~80 KB). The full row file `vendor-payments.json` (~193 MB) is gitignored and must be generated locally; the site still loads **verified KPIs and transportation metrics** from `summary.json` without it. For all 934k+ rows in the browser, run locally:
 
 ```powershell
 py -3.11 tools/precompute_summary.py Vendor-Payments_2021-23.xlsx summary.json

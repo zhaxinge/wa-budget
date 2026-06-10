@@ -477,15 +477,17 @@ function mapPrecomputedRow(r){
 }
 async function loadSample(){
   showStatus('Loading precomputed summary…','info');
+  let summaryLoaded=false;
   try{
     const summaryRes=await fetch('./summary.json',{cache:'no-store'});
-    if(!summaryRes.ok)throw new Error('summary.json unavailable');
+    if(!summaryRes.ok)throw new Error(`summary.json unavailable (${summaryRes.status})`);
     const summary=await summaryRes.json();
     SUMMARY_CONTEXT=summary.AI_CONTEXT||summary;
     VERIFIED_FACTS=SUMMARY_CONTEXT.VERIFIED_FACTS||summary.VERIFIED_FACTS||null;
+    summaryLoaded=!!VERIFIED_FACTS;
 
     const rowsFile=SUMMARY_CONTEXT.rows_file||'vendor-payments.json';
-    showStatus(`Loading all payment records from ${rowsFile}…`,'info');
+    showStatus(`Loading payment records from ${rowsFile}…`,'info');
     const rowsRes=await fetch('./'+rowsFile,{cache:'no-store'});
     if(rowsRes.ok){
       const payload=await rowsRes.json();
@@ -498,15 +500,26 @@ async function loadSample(){
 
     const fallback=SUMMARY_CONTEXT.sample_rows||[];
     if(fallback.length){
-      finalizeRows(fallback.map(mapPrecomputedRow),'summary.json (sample rows only)',true);
-      showStatus('Loaded summary sample rows only. Regenerate vendor-payments.json for the full dataset.','warn');
+      finalizeRows(fallback.map(mapPrecomputedRow),'summary.json (sample rows)',true);
+      showStatus(`Loaded ${fallback.length.toLocaleString()} sample rows from summary.json. Add ${rowsFile} locally for all rows.`,'warn');
       return;
     }
-    throw new Error('No precomputed rows found');
+
+    if(VERIFIED_FACTS){
+      finalizeRows([],'summary.json (verified facts only)',true);
+      return;
+    }
+    throw new Error('No precomputed data found in summary.json');
   }catch(e){
-    SUMMARY_CONTEXT=null; VERIFIED_FACTS=null;
-    finalizeRows([...SAMPLE],'embedded sample',true);
-    showStatus('Embedded representative sample loaded. Add summary.json and vendor-payments.json for the full precomputed demo.','ok');
+    if(!summaryLoaded){
+      SUMMARY_CONTEXT=null; VERIFIED_FACTS=null;
+      finalizeRows([...SAMPLE],'embedded sample',true);
+      showStatus('Could not load summary.json. Using embedded sample. Serve the repo with a static server or deploy summary.json with the site.','ok');
+    }else{
+      finalizeRows([],'summary.json',true);
+      showStatus('Summary loaded but row data could not be parsed. KPIs may still use verified facts if available.','warn');
+    }
+    auditLog({type:'DATA_LOAD_FALLBACK',error:e.message,origin:location.origin});
   }
 }
 function finalizeRows(rows,source,isSample=false){
@@ -514,9 +527,14 @@ function finalizeRows(rows,source,isSample=false){
   document.getElementById('dashboard').style.display='block';
   buildMetrics();
   setLens(currentLens);
+  const verifiedCount=VERIFIED_FACTS?.row_count;
   const tNote = STATE.tTotal>0 ? '' : ' No transportation records detected; regenerate summary.json with the updated precompute script if using the transport lens.';
-  showStatus(`✓ ${DATA.length.toLocaleString()} records loaded from ${esc(source)}.${tNote}`,'ok');
-  auditLog({type:'DATA_LOAD_SUCCESS',source,rows:DATA.length,isSample,total:fmt(STATE.total)});
+  if(!DATA.length&&verifiedCount){
+    showStatus(`✓ Verified facts loaded for ${verifiedCount.toLocaleString()} records from ${esc(source)}.${tNote}`,'ok');
+  }else{
+    showStatus(`✓ ${DATA.length.toLocaleString()} records loaded from ${esc(source)}.${tNote}`,'ok');
+  }
+  auditLog({type:'DATA_LOAD_SUCCESS',source,rows:DATA.length||verifiedCount||0,isSample,total:fmt(STATE.total)});
 }
 function buildMetrics(){
   const {total,tTotal,tGrowth}=STATE;
